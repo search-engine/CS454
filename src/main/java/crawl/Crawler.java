@@ -1,5 +1,10 @@
 package crawl;
 
+import java.io.IOException;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 public class Crawler {
 	private static String url;
 	private static int depth = -1;
@@ -32,7 +37,15 @@ public class Crawler {
 			System.exit(0);
 		}
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
-		
+		try {
+			Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
+			String test = doc.html();
+			System.out.println(test);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }
