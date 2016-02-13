@@ -60,6 +60,7 @@ public class Crawl implements Callable<Set<String>>{
 						extractJsonObj.put("url", url);
 						extractJsonObj.put("type", content);
 						extractJsonObj.put("text", text);
+						extractJsonObj.put("path", path + fname + ".html");
 						JSONArray imageArray = new JSONArray();
 						for(Element img : doc.select("img")){
 													
