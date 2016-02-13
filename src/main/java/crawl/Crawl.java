@@ -1,30 +1,60 @@
 package crawl;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import javax.imageio.ImageIO;
+
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+
 public class Crawl implements Callable<Set<String>>{
 	private String url;
 	private int depth;
 	private boolean isExtraction;
 	private static final String path = System.getProperty("user.dir") + "/src/url/";
-
+	private static DB db = getMongoDB();
+    private static Set<String> images = new HashSet<String>();
+	
 	public Crawl(String url, int depth, boolean isExtraction) {
 		this.url = url;
 		this.depth = depth;
 		this.isExtraction = isExtraction;
+	}
+
+
+	private static DB getMongoDB() {
+		DB dbm = null;
+		try{
+			// To connect to mongodb server
+		    MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
+				
+		    // Now connect to your databases
+		    dbm = mongoClient.getDB( "search_engine" );
+				
+		    //boolean auth = db.authenticate(myUserName, myPassword);
+		    System.out.println("Authentication: ");         
+		    
+		    
+			}catch(Exception e){
+		        System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		    }
+		return dbm;
 	}
 
 
@@ -46,6 +76,23 @@ public class Crawl implements Callable<Set<String>>{
 				FileOutputStream fos = new FileOutputStream(path + fname + ".html");
 				fos.write(bytes);
 				fos.close();
+				JSONArray imageArray = new JSONArray();
+				for(Element img : doc.select("img")){
+											
+					if(img.baseUri().equals(doc.baseUri())){
+						String imageUrl = img.absUrl("src");
+						synchronized(images){
+							if(!images.contains(imageUrl)){
+								BufferedImage image = null;
+								URL url = new URL(imageUrl);
+					            image = ImageIO.read(url);
+					            ImageIO.write(image, "png",new File(path + imageUrl.replace("/", "_")));
+								images.add(imageUrl);
+								imageArray.put(imageUrl.replace("://", "_").replace("/", "_").substring(0, imageUrl.lastIndexOf(".") - 1)+"png");
+							}
+						}
+					}
+				}
 				if(isExtraction){
 					String html = doc.html();
 					String title = doc.title();
@@ -53,32 +100,21 @@ public class Crawl implements Callable<Set<String>>{
 					Document extractDoc = Jsoup.parse(html);
 					
 					String text = extractDoc.text();
-
-					JSONObject extractJsonObj = new JSONObject();
-					try {
-						extractJsonObj.put("title",title);
-						extractJsonObj.put("url", url);
-						extractJsonObj.put("type", content);
-						extractJsonObj.put("text", text);
-						extractJsonObj.put("path", path + fname + ".html");
-						JSONArray imageArray = new JSONArray();
-						for(Element img : doc.select("img")){
-													
-							if(img.baseUri().equals(doc.baseUri())){
-								imageArray.put(img.attr("src"));
-							}
-						}
-						extractJsonObj.put("images", imageArray);
-						
-
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 					
-					System.out.println(extractJsonObj.toString());
-
-					
+					try{  		   
+						DBCollection coll = db.getCollection("mycol");	
+						BasicDBObject obj = new BasicDBObject("title", title).
+							            append("url", url).
+							            append("type", content).
+							            append("text", text).
+							            append("path", path + fname + ".html").
+							            append("images", imageArray);
+					         
+					    coll.insert(obj);
+					    System.out.println("Document inserted successfully");
+					}catch(Exception e){
+					    System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+					}					
 				}
 			}
 			else {

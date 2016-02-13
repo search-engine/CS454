@@ -11,6 +11,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCursor;
+
 public class Crawler {
 	private static String url;
 	private static int depth = -1;
@@ -85,7 +95,10 @@ public class Crawler {
 			depth--;
 		}
 		System.out.println(urlSet.size());
-	}
+		
+		
+	   }
+		
  	
 
 	private static boolean addURL(String u) {
