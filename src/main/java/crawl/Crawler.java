@@ -64,10 +64,39 @@ public class Crawler {
 
 
 
-	private static void crawlURL(String url2, int depth2) {
+	private static void crawlURL(String url2, int depth2) throws NoSuchAlgorithmException {
 		if(depth2 <= depth){
 			try {
 				Document doc = Jsoup.connect(url2).ignoreContentType(true).userAgent("Mozilla").get();
+					
+				byte[] bytes = Jsoup.connect(url).maxBodySize(2000000).ignoreContentType(true).execute().bodyAsBytes();
+				String path = System.getProperty("user.dir") + "/src/";
+				Response response = Jsoup.connect(url).ignoreContentType(true).execute();
+				String content = response.contentType();
+				MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+				messageDigest.update(url.getBytes());
+				String encryptedString = new String(messageDigest.digest());
+				if(content.contains("application/pdf")) {
+					FileOutputStream fos = new FileOutputStream(path + encryptedString + ".pdf");
+					fos.write(bytes);
+					fos.close();
+				}
+				else if(content.contains("text/html")) {
+					FileOutputStream fos = new FileOutputStream(path + encryptedString + ".html");
+					fos.write(bytes);
+					fos.close();
+				}
+				else if(content.contains("image/jpeg")) {
+					FileOutputStream fos = new FileOutputStream(path + encryptedString + ".jpg");
+					fos.write(bytes);
+					fos.close();
+				}
+				else {
+					FileOutputStream fos = new FileOutputStream(path + encryptedString + ".txt");
+					fos.write(bytes);
+					fos.close();
+				}
+				
 				System.out.println("visited: "+ url2 + " depth: " + depth2);
 				if(depth != depth2){
 					Elements links = doc.select("a[href]");
@@ -77,57 +106,13 @@ public class Crawler {
 						}
 					}
 				}
-			}catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-
-	private static Set<String> crawl(String url2, boolean isExtraction2) throws NoSuchAlgorithmException{
-		Set<String> linkSet = new HashSet<String>();
-		try {
-			Document doc = Jsoup.connect(url).ignoreContentType(true).userAgent("Mozilla").get();
-			Elements links = doc.select("a[href]");
-			for(Element link : links){
-				linkSet.add(link.attr("abs:href"));
-			}
-		byte[] bytes = Jsoup.connect(url).maxBodySize(2000000).ignoreContentType(true).execute().bodyAsBytes();
-		String path = System.getProperty("user.dir") + "/src/";
-		Response response = Jsoup.connect(url).ignoreContentType(true).execute();
-		String content = response.contentType();
-		MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-		messageDigest.update(url.getBytes());
-		String encryptedString = new String(messageDigest.digest());
-		if(content.contains("application/pdf")) {
-			FileOutputStream fos = new FileOutputStream(path + encryptedString + ".pdf");
-			fos.write(bytes);
-			fos.close();
-		}
-		else if(content.contains("text/html")) {
-			FileOutputStream fos = new FileOutputStream(path + encryptedString + ".html");
-			fos.write(bytes);
-			fos.close();
-		}
-		else if(content.contains("image/jpeg")) {
-			FileOutputStream fos = new FileOutputStream(path + encryptedString + ".jpg");
-			fos.write(bytes);
-			fos.close();
-		}
-		else {
-			FileOutputStream fos = new FileOutputStream(path + encryptedString + ".txt");
-			fos.write(bytes);
-			fos.close();
-		}
-			
-			
-			if(isExtraction2){
 				
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
 		}
-		return linkSet;
 	}
-
 }
+
+
