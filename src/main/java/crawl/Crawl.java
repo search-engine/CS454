@@ -29,15 +29,6 @@ public class Crawl implements Callable<Set<String>>{
 	private boolean isExtraction;
 	private static final String path = System.getProperty("user.dir") + "/url/";
 
-	
-	{	 
-	File file = new File(System.getProperty("user.dir")+"/url/");
-	if(!file.exists()){
-		if(file.mkdir()){
-			System.out.println("created url directory");
-		}
-	}
-	}
 	private static DB db = getMongoDB();
     private static Set<String> images = new HashSet<String>();
 	
@@ -73,7 +64,7 @@ public class Crawl implements Callable<Set<String>>{
 			byte[] bytes = Jsoup.connect(url).maxBodySize(2000000).ignoreContentType(true).execute().bodyAsBytes();
 			Response response = Jsoup.connect(url).ignoreContentType(true).execute();
 			String content = response.contentType();
-			String fname = url.replace("://", "_").replace("/", "_");
+			String fname = url.replace("://", "_").replace("/", "_").replace("?", "_");
 			if(content.contains("text/html")) {
 				FileOutputStream fos = new FileOutputStream(path + fname + ".html");
 				fos.write(bytes);
@@ -88,9 +79,9 @@ public class Crawl implements Callable<Set<String>>{
 								BufferedImage image = null;
 								URL url = new URL(imageUrl);
 					            image = ImageIO.read(url);
-					            ImageIO.write(image, "png",new File(path + imageUrl.replace("/", "_")));
+					            ImageIO.write(image, "png",new File(path + imageUrl.replace("://", "_").replace("/", "_").replace("?", "_")));
 								images.add(imageUrl);
-								imageArray.put(imageUrl.replace("://", "_").replace("/", "_").substring(0, imageUrl.lastIndexOf(".") - 1)+"png");
+								imageArray.put(imageUrl.replace("://", "_").replace("/", "_").replace("?", "_").substring(0, imageUrl.lastIndexOf(".") - 1)+"png");
 							}
 						}
 					}

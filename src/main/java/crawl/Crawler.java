@@ -1,5 +1,6 @@
 package crawl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -54,7 +55,12 @@ public class Crawler {
 		
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
 		addURL(url);
-		
+		File file = new File(System.getProperty("user.dir")+"/url/");
+		if(!file.exists()){
+			if(file.mkdir()){
+				System.out.println("created url directory");
+			}
+		}		
 		while(depth >= 0){
 			Queue<String> urlQueue2 = new LinkedList<String>();
 			while(!urlQueue.isEmpty()){
