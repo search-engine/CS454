@@ -63,14 +63,16 @@ public class Crawler {
  	
 
 	private static void crawlURL(String url2, int depth2) {
-		System.out.println("visited: "+ url2 + " depth: " + depth2);
-		if(depth2 < depth){
+		if(depth2 <= depth){
 			try {
-				Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
-				Elements links = doc.select("a[href]");
-				for(Element link : links){
-					if(urlSet.add(link.attr("abs:href"))){
-						crawlURL(link.attr("abs:href"), depth2+1);
+				Document doc = Jsoup.connect(url2).ignoreContentType(true).userAgent("Mozilla").get();
+				System.out.println("visited: "+ url2 + " depth: " + depth2);
+				if(depth != depth2){
+					Elements links = doc.select("a[href]");
+					for(Element link : links){
+						if(urlSet.add(link.attr("abs:href"))){
+							crawlURL(link.attr("abs:href"), depth2+1);
+						}
 					}
 				}
 			}catch (IOException e) {
