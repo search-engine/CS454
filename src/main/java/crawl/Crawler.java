@@ -2,11 +2,11 @@ package crawl;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
+
 
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -18,6 +18,7 @@ public class Crawler {
 	private static String url;
 	private static int depth = -1;
 	private static boolean isExtraction = false;
+	private static Set<String> urlSet= new HashSet<String>();
  	public static void main(String[] args) throws NoSuchAlgorithmException {
  		int index = 0;
  		while(index < args.length){
@@ -53,14 +54,37 @@ public class Crawler {
 		}
 		
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
+		urlSet.add(url);
+		crawlURL(url, 0);
 		
-		Set<String> urls = crawl(url);	
-		for(String u: urls){
-			System.out.println(u);
-		}
+		//Set<String> urls = crawl(url, isExtraction);	
 	}
  	
-	private static Set<String> crawl(String url2) throws NoSuchAlgorithmException {
+
+
+
+
+	private static void crawlURL(String url2, int depth2) {
+		if(depth2 <= depth){
+			try {
+				Document doc = Jsoup.connect(url2).ignoreContentType(true).userAgent("Mozilla").get();
+				System.out.println("visited: "+ url2 + " depth: " + depth2);
+				if(depth != depth2){
+					Elements links = doc.select("a[href]");
+					for(Element link : links){
+						if(urlSet.add(link.attr("abs:href"))){
+							crawlURL(link.attr("abs:href"), depth2+1);
+						}
+					}
+				}
+			}catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+
+	private static Set<String> crawl(String url2, boolean isExtraction2) throws NoSuchAlgorithmException{
 		Set<String> linkSet = new HashSet<String>();
 		try {
 			Document doc = Jsoup.connect(url).ignoreContentType(true).userAgent("Mozilla").get();
@@ -96,6 +120,10 @@ public class Crawler {
 			fos.close();
 		}
 			
+			
+			if(isExtraction2){
+				
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
