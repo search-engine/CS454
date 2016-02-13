@@ -74,6 +74,9 @@ public class Crawl implements Callable<Set<String>>{
 											
 					if(img.baseUri().equals(doc.baseUri())){
 						String imageUrl = img.absUrl("src");
+						if(imageUrl.contains(";")){
+							imageUrl = imageUrl.substring(0, imageUrl.indexOf(";"));
+						}
 						synchronized(images){
 							if(!images.contains(imageUrl)){
 								BufferedImage image = null;
