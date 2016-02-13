@@ -49,19 +49,27 @@ public class Crawler {
 		
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
 		
-		Set<String> urls = crawl(url);	
+	
+		Set<String> urls = crawl(url, isExtraction);	
+		
+		
+		
 		for(String u: urls){
 			System.out.println(u);
 		}
 	}
  	
-	private static Set<String> crawl(String url2) {
+	private static Set<String> crawl(String url2, boolean isExtraction2) {
 		Set<String> linkSet = new HashSet<String>();
 		try {
 			Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
 			Elements links = doc.select("a[href]");
 			for(Element link : links){
 				linkSet.add(link.attr("abs:href"));
+			}
+			
+			if(isExtraction2){
+				
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
