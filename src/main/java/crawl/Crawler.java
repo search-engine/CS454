@@ -99,13 +99,14 @@ public class Crawler {
  	
 
 	private static boolean addURL(String u) {
-		if(u.substring(u.length() - 1).equals("/")){
-			u = u.substring(0, u.length()-1);
-			System.out.println(u);
-		}
 		if(u.contains(";")){
 			u = u.substring(0, u.indexOf(";"));
 		}
+		if(u.substring(u.length() - 1).equals("/")){
+			u = u.substring(0, u.length() - 1);
+			System.out.println(u);
+		}
+		
 		if(urlSet.add(u)){
 			return urlQueue.add(u);
 		}else{

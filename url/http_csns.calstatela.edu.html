@@ -1,0 +1,99 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSNetwork Services</title>
+  <link href="/favicon.ico;jsessionid=0AF0ED9F06CFD6E4932A94523FD0BC5E" type="image/x-icon" rel="shortcut icon" />
+  <link rel="stylesheet" href="/css/layout.css;jsessionid=0AF0ED9F06CFD6E4932A94523FD0BC5E">
+  <link rel="stylesheet" href="/css/style.css;jsessionid=0AF0ED9F06CFD6E4932A94523FD0BC5E">
+  <link rel="stylesheet" href="/css/menu.css;jsessionid=0AF0ED9F06CFD6E4932A94523FD0BC5E">
+  <link rel="stylesheet" href="/css/diff.css;jsessionid=0AF0ED9F06CFD6E4932A94523FD0BC5E">
+  <script src="http://csns.calstatela.edu/static/jquery-1.11.1.min.js"></script>
+<script>
+function set_content_height()
+{
+	var h = $(window).height()-$("#csns_header").height()-$("#csns_menu").height()-$("#csns_footer").height()-60;
+	$("#csns_content #content").css("min-height", h+"px"); 
+}
+$(function(){
+	set_content_height();
+    $(window).resize(set_content_height);
+});
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-52219601-1', 'auto');
+	  ga('send', 'pageview');
+</script>
+</head>
+<body>
+
+
+<div id="csns_header">
+<div class="wrap">
+  <a href="/;jsessionid=0AF0ED9F06CFD6E4932A94523FD0BC5E"><img style="border: 0;" id="csns_logo" alt="csns"
+    src="/img/layout/csns_logo.png;jsessionid=0AF0ED9F06CFD6E4932A94523FD0BC5E" /></a>
+  
+</div>
+</div>
+
+
+
+<div id="csns_content"><div id="content">
+  
+<script type="text/javascript">
+$(function(){
+    $("select").change(function(){
+    	window.location.href = $("select").val();
+    });
+    $("button").click(function(){
+    	window.location.href = $("select").val();
+    });
+    $("#content").css("width", "950px")
+});
+</script>
+
+<img id="welcome" src="/img/style/welcome_banner.jpg;jsessionid=0AF0ED9F06CFD6E4932A94523FD0BC5E" alt="welcome" />
+
+<ul id="title" style="margin:0;">
+<li>Welcome to CSNetwork Services</li>
+</ul>
+
+<div id="blk">
+<div class="blk_wrap"><div class="blk_cnt">
+<p>CSNetwork Services, or CSNS, is a web-based system that provides a number of services to 
+facilitates teaching, learning, student administration, and program assessment.</p>
+
+<p>To proceed, please select a department:  
+  <select name="department">
+    
+      <option value="department/cs/">Computer Science</option>
+    
+      <option value="department/tech/">Technology</option>
+    
+      <option value="department/ecst/">College of ECST</option>
+    
+      <option value="department/ece/">Electrical and Computer Engineering</option>
+    
+  </select>
+  <button>OK</button>
+</p>
+</div></div>
+</div>
+
+</div></div>
+
+<div id="blue_border"></div>
+<div id="csns_footer">
+<div class="wrap">
+  Copyright &copy; 2012-2015, Chengyu Sun. All rights reserved.
+</div>
+</div>
+
+</body>
+</html>
