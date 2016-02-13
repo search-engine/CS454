@@ -32,3 +32,10 @@ task crawl(type: JavaExec) {
         args arguments.split(" ")
     }
 }
+
+task dump(type: JavaExec) {
+	classpath = sourceSets.main.runtimeClasspath
+	
+	main = 'crawl.Dump'
+}
+	
