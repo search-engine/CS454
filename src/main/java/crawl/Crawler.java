@@ -11,7 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
-
 public class Crawler {
 	private static String url;
 	private static int depth = -1;
@@ -19,7 +18,7 @@ public class Crawler {
 	private static Set<String> urlSet = new HashSet<String>();
 	private static Queue<String> urlQueue = new LinkedList<String>();
  	public static void main(String[] args) {
- 		int index = 0;
+		int index = 0;
  		while(index < args.length){
  			if(args[index].equals("-d")){
  				index++;
@@ -96,5 +95,6 @@ public class Crawler {
 			return false;
 		}
 	}
-
 }
+
+
