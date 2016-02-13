@@ -1,20 +1,24 @@
 package crawl;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.Set;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class Crawler {
 	private static String url;
 	private static int depth = -1;
 	private static boolean isExtraction = false;
+	private static Set<String> urlSet = new HashSet<String>();
+	private static Queue<String> urlQueue = new LinkedList<String>();
  	public static void main(String[] args) {
- 		int index = 0;
+		int index = 0;
  		while(index < args.length){
  			if(args[index].equals("-d")){
  				index++;
@@ -48,33 +52,49 @@ public class Crawler {
 		}
 		
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
+		addURL(url);
 		
-	
-		Set<String> urls = crawl(url, isExtraction);	
-		
-		
-		
-		for(String u: urls){
-			System.out.println(u);
+		while(depth >= 0){
+			Queue<String> urlQueue2 = new LinkedList<String>();
+			while(!urlQueue.isEmpty()){
+				urlQueue2.add(urlQueue.poll());
+			}
+	        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+	        List<Future<Set<String>>> resultList = new ArrayList<Future<Set<String>>>();
+			
+	        while(!urlQueue2.isEmpty()){
+	        	String url2Crawl = urlQueue2.poll();
+	        	Crawl crawler = new Crawl(url2Crawl, depth, isExtraction);
+	        	Future<Set<String>> resultSet = executor.submit(crawler);
+	        	resultList.add(resultSet);
+	        }
+			for(Future<Set<String>> futureSet : resultList){
+				try {
+					Set<String> sets = futureSet.get();
+					for(String u : sets){
+						addURL(u);
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+			executor.shutdown();
+			while(!executor.isTerminated()){}
+			depth--;
 		}
+		System.out.println(urlSet.size());
 	}
  	
-	private static Set<String> crawl(String url2, boolean isExtraction2) {
-		Set<String> linkSet = new HashSet<String>();
-		try {
-			Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
-			Elements links = doc.select("a[href]");
-			for(Element link : links){
-				linkSet.add(link.attr("abs:href"));
-			}
-			
-			if(isExtraction2){
-				
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return linkSet;
-	}
 
+	private static boolean addURL(String u) {
+		if(urlSet.add(u)){
+			return urlQueue.add(u);
+		}else{
+			return false;
+		}
+	}
 }
+
+
