@@ -2,7 +2,6 @@ package crawl;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -27,6 +26,7 @@ public class Crawl implements Callable<Set<String>>{
 		this.depth = depth;
 		this.isExtraction = isExtraction;
 	}
+
 
 	public Set<String> call() throws Exception {
 		Set<String> linkSet = new HashSet<String>();
