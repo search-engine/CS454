@@ -27,7 +27,17 @@ public class Crawl implements Callable<Set<String>>{
 	private String url;
 	private int depth;
 	private boolean isExtraction;
-	private static final String path = System.getProperty("user.dir") + "/src/url/";
+	private static final String path = System.getProperty("user.dir") + "/url/";
+
+	
+	{	 
+	File file = new File(System.getProperty("user.dir")+"/url/");
+	if(!file.exists()){
+		if(file.mkdir()){
+			System.out.println("created url directory");
+		}
+	}
+	}
 	private static DB db = getMongoDB();
     private static Set<String> images = new HashSet<String>();
 	
@@ -41,16 +51,8 @@ public class Crawl implements Callable<Set<String>>{
 	private static DB getMongoDB() {
 		DB dbm = null;
 		try{
-			// To connect to mongodb server
 		    MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
-				
-		    // Now connect to your databases
 		    dbm = mongoClient.getDB( "search_engine" );
-				
-		    //boolean auth = db.authenticate(myUserName, myPassword);
-		    System.out.println("Authentication: ");         
-		    
-		    
 			}catch(Exception e){
 		        System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 		    }
