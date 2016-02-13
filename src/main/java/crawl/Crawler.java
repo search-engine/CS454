@@ -1,8 +1,14 @@
 package crawl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,6 +19,7 @@ public class Crawler {
 	private static String url;
 	private static int depth = -1;
 	private static boolean isExtraction = false;
+	private static Set<String> urlSet= new HashSet<String>();
  	public static void main(String[] args) {
  		int index = 0;
  		while(index < args.length){
@@ -48,18 +55,32 @@ public class Crawler {
 		}
 		
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
+		urlSet.add(url);
+		crawlURL(url, 0);
 		
-	
-		Set<String> urls = crawl(url, isExtraction);	
-		
-		
-		
-		for(String u: urls){
-			System.out.println(u);
-		}
+		//Set<String> urls = crawl(url, isExtraction);	
 	}
  	
-	private static Set<String> crawl(String url2, boolean isExtraction2) {
+
+	private static void crawlURL(String url2, int depth2) {
+		System.out.println("visited: "+ url2 + " depth: " + depth2);
+		if(depth2 < depth){
+			try {
+				Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
+				Elements links = doc.select("a[href]");
+				for(Element link : links){
+					if(urlSet.add(link.attr("abs:href"))){
+						crawlURL(link.attr("abs:href"), depth2+1);
+					}
+				}
+			}catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+
+	private static Set<String> crawl(String url2, boolean isExtraction2){
 		Set<String> linkSet = new HashSet<String>();
 		try {
 			Document doc = Jsoup.connect(url).userAgent("Mozilla").get();
