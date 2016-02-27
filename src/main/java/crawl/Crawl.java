@@ -22,22 +22,51 @@ import org.jsoup.select.Elements;
 public class Crawl implements Callable<Set<String>>{
 	private String url;
 	private int depth;
-	private static final String base = System.getProperty("user.dir") + "/url/";
+	private String homeDir;
+	private String base = System.getProperty("user.dir") + "/url/";
 
     private static Set<String> images = new HashSet<String>();
 	
-	public Crawl(String url, int depth) {
+	public Crawl(String url, int depth, String homeDir) {
 		this.url = url;
 		this.depth = depth;
+		this.homeDir = homeDir;
 	}
 
 	public Set<String> call() throws Exception {
 		Set<String> linkSet = new HashSet<String>();
 		try {
 			Document doc = Jsoup.connect(url).ignoreContentType(true).userAgent("Mozilla").get();
+			
+			
+			String urlToCrawl = doc.baseUri().replace("://", "_").replace("/", "_");
+			
+			
+			if(urlToCrawl.contains(homeDir)){
+				String subUrls = urlToCrawl.replace(homeDir, "");
+
+				if(subUrls.contains("_")){
+					File file = new File(System.getProperty("user.dir")+"/"+homeDir+"/"+"/"+subUrls.replace("_", "/")+"/");
+					if(!file.exists()){
+						if(file.mkdirs()){
+							base = file.getPath();
+						}
+					}
+				}else{
+					File file = new File(System.getProperty("user.dir")+"/"+homeDir+"/"+"/"+subUrls+"/");
+					if(!file.exists()){
+						if(file.mkdir()){
+							base = file.getPath();
+						}
+					}
+				}
+			}
+
+			
 			if(depth > 0){
 				Elements links = doc.select("a[href]");
 				for(Element link : links){
+					
 					linkSet.add(link.attr("abs:href"));
 				}
 			}
@@ -46,7 +75,7 @@ public class Crawl implements Callable<Set<String>>{
 			String content = response.contentType();
 			String fname = url.replace("://", "_").replace("/", "_").replace("?", "_");
 			if(content.contains("text/html")) {
-				FileOutputStream fos = new FileOutputStream(base + fname + ".html");
+				FileOutputStream fos = new FileOutputStream(base+"/" + fname + ".html");
 				fos.write(bytes);
 				fos.close();
 				JSONArray imageArray = new JSONArray();
@@ -60,7 +89,7 @@ public class Crawl implements Callable<Set<String>>{
 								BufferedImage image = null;
 								URL url = new URL(imageUrl);
 					            image = ImageIO.read(url);
-					            ImageIO.write(image, "png",new File(base + imageUrl.replace("://", "_").replace("/", "_").replace("?", "_")));
+					            ImageIO.write(image, "png",new File(base+"/" + imageUrl.replace("://", "_").replace("/", "_").replace("?", "_")));
 								images.add(imageUrl);
 								imageArray.put(imageUrl.replace("://", "_").replace("/", "_").replace("?", "_").substring(0, imageUrl.lastIndexOf(".") - 1)+"png");
 							}
@@ -69,7 +98,7 @@ public class Crawl implements Callable<Set<String>>{
 				}
 			}
 			else {
-				FileOutputStream fos = new FileOutputStream(base + fname);
+				FileOutputStream fos = new FileOutputStream(base+"/" + fname);
 				fos.write(bytes);
 				fos.close();
 			}

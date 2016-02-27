@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
+
 import url.UrlLink;
 
 
@@ -53,7 +54,10 @@ public class Crawler {
 		}
 		
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
-		addURL(urlTrim(url));
+		url = urlTrim(url);
+		addURL(url);
+		String baseUrl = getBase(url);
+		System.out.println(baseUrl);
 		File file = new File(System.getProperty("user.dir")+"/url/");
 		if(!file.exists()){
 			if(file.mkdir()){
@@ -70,7 +74,7 @@ public class Crawler {
 	        
 	        while(!urlQueue2.isEmpty()){
 	        	String url2Crawl = urlQueue2.poll();
-	        	Crawl crawler = new Crawl(url2Crawl, depth);
+	        	Crawl crawler = new Crawl(url2Crawl, depth, baseUrl);
 	        	Future<Set<String>> resultSet = executor.submit(crawler);
 	        	resultList.put(url2Crawl, resultSet);
 	        }
@@ -103,6 +107,17 @@ public class Crawler {
 	   }
 		
  	
+
+	private static String getBase(String url2) {
+		int index = url2.indexOf('/', 9);
+		if(index == -1){
+			return url2+"/";
+		}else{
+			return url2.substring(0, index+1);
+		}
+	}
+
+
 
 	private static boolean addURL(String u) {
 		if(!urlSet.containsKey(u)){
