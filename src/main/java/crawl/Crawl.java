@@ -18,38 +18,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.MongoClient;
 
 public class Crawl implements Callable<Set<String>>{
 	private String url;
 	private int depth;
-	private boolean isExtraction;
-	private static final String path = System.getProperty("user.dir") + "/url/";
+	private static final String base = System.getProperty("user.dir") + "/url/";
 
-	private static DB db = getMongoDB();
     private static Set<String> images = new HashSet<String>();
 	
-	public Crawl(String url, int depth, boolean isExtraction) {
+	public Crawl(String url, int depth) {
 		this.url = url;
 		this.depth = depth;
-		this.isExtraction = isExtraction;
 	}
-
-
-	private static DB getMongoDB() {
-		DB dbm = null;
-		try{
-		    MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
-		    dbm = mongoClient.getDB( "search_engine" );
-			}catch(Exception e){
-		        System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-		    }
-		return dbm;
-	}
-
 
 	public Set<String> call() throws Exception {
 		Set<String> linkSet = new HashSet<String>();
@@ -61,60 +41,35 @@ public class Crawl implements Callable<Set<String>>{
 					linkSet.add(link.attr("abs:href"));
 				}
 			}
-			byte[] bytes = Jsoup.connect(url).maxBodySize(2000000).ignoreContentType(true).execute().bodyAsBytes();
+			byte[] bytes = Jsoup.connect(url).maxBodySize(0).ignoreContentType(true).execute().bodyAsBytes();
 			Response response = Jsoup.connect(url).ignoreContentType(true).execute();
 			String content = response.contentType();
 			String fname = url.replace("://", "_").replace("/", "_").replace("?", "_");
 			if(content.contains("text/html")) {
-				FileOutputStream fos = new FileOutputStream(path + fname + ".html");
+				FileOutputStream fos = new FileOutputStream(base + fname + ".html");
 				fos.write(bytes);
 				fos.close();
 				JSONArray imageArray = new JSONArray();
 				for(Element img : doc.select("img")){
-											
 					if(img.baseUri().equals(doc.baseUri())){
 						String imageUrl = img.absUrl("src");
 						if(imageUrl.contains(";")){
 							imageUrl = imageUrl.substring(0, imageUrl.indexOf(";"));
 						}
-						synchronized(images){
 							if(!images.contains(imageUrl)){
 								BufferedImage image = null;
 								URL url = new URL(imageUrl);
 					            image = ImageIO.read(url);
-					            ImageIO.write(image, "png",new File(path + imageUrl.replace("://", "_").replace("/", "_").replace("?", "_")));
+					            ImageIO.write(image, "png",new File(base + imageUrl.replace("://", "_").replace("/", "_").replace("?", "_")));
 								images.add(imageUrl);
 								imageArray.put(imageUrl.replace("://", "_").replace("/", "_").replace("?", "_").substring(0, imageUrl.lastIndexOf(".") - 1)+"png");
 							}
-						}
+						
 					}
-				}
-				if(isExtraction){
-					String html = doc.html();
-					String title = doc.title();
-
-					Document extractDoc = Jsoup.parse(html);
-					
-					String text = extractDoc.text();
-					
-					try{  		   
-						DBCollection coll = db.getCollection("mycol");	
-						BasicDBObject obj = new BasicDBObject("title", title).
-							            append("url", url).
-							            append("type", content).
-							            append("text", text).
-							            append("path", path + fname + ".html").
-							            append("images", imageArray);
-					         
-					    coll.insert(obj);
-					    System.out.println("Document inserted successfully");
-					}catch(Exception e){
-					    System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-					}					
 				}
 			}
 			else {
-				FileOutputStream fos = new FileOutputStream(path + fname);
+				FileOutputStream fos = new FileOutputStream(base + fname);
 				fos.write(bytes);
 				fos.close();
 			}
