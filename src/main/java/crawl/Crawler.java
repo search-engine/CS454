@@ -56,8 +56,6 @@ public class Crawler {
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
 		url = urlTrim(url);
 		addURL(url);
-		String baseUrl = getBase(url);
-		System.out.println(baseUrl);
 		File file = new File(System.getProperty("user.dir")+"/url/");
 		if(!file.exists()){
 			if(file.mkdir()){
@@ -74,7 +72,7 @@ public class Crawler {
 	        
 	        while(!urlQueue2.isEmpty()){
 	        	String url2Crawl = urlQueue2.poll();
-	        	Crawl crawler = new Crawl(url2Crawl, depth, baseUrl);
+	        	Crawl crawler = new Crawl(url2Crawl, depth);
 	        	Future<Set<String>> resultSet = executor.submit(crawler);
 	        	resultList.put(url2Crawl, resultSet);
 	        }
@@ -105,22 +103,12 @@ public class Crawler {
 				System.out.println(u+" has in: "+urllink.linkFromSize()+ " out: "+urllink.linkToSize());
 			}
 	   }
-		
- 	
-
-	private static String getBase(String url2) {
-		int index = url2.indexOf('/', 9);
-		if(index == -1){
-			return url2+"/";
-		}else{
-			return url2.substring(0, index+1);
-		}
-	}
-
 
 
 	private static boolean addURL(String u) {
-		if(!urlSet.containsKey(u)){
+		if(u == null || !(u.contains("https://")||u.contains("http://"))){
+			return false;
+		}else if(!urlSet.containsKey(u)){
 			System.out.println("added " + u);
 			urlSet.put(u, new UrlLink(u));
 			return urlQueue.add(u);
