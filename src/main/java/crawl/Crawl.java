@@ -22,7 +22,6 @@ public class Crawl implements Callable<Set<String>>{
 	private String url;
 	private int depth;
 	private String base = System.getProperty("user.dir") + "/url/";
-
     private static Set<String> images = new HashSet<String>();
 	
 	public Crawl(String url, int depth) {
@@ -34,7 +33,11 @@ public class Crawl implements Callable<Set<String>>{
 		Set<String> linkSet = new HashSet<String>();
 		try {
 			Document doc = Jsoup.connect(url).ignoreContentType(true).userAgent("Mozilla").get();
-			String path = getPath(url);
+			String path = base + getPath(url);
+			System.out.println(url + " path---> " + path);
+			File file = new File(path);
+			if(!file.exists()){if(file.mkdir()){System.out.println("path created "+path);}}
+			
 			if(depth > 0){
 				Elements links = doc.select("a[href]");
 				for(Element link : links){		
@@ -46,9 +49,10 @@ public class Crawl implements Callable<Set<String>>{
 			String contentType = response.contentType();
 			Boolean isHTML = contentType.contains("text/html");
 			String fname = getFname(url, isHTML);
-			FileOutputStream fos = new FileOutputStream(base + path + fname + ".html");
+			FileOutputStream fos = new FileOutputStream(path + fname);
 			fos.write(bytes);
 			fos.close();
+			/*
 			if(isHTML) {
 				for(Element img : doc.select("img")){
 					if(img.baseUri().equals(doc.baseUri())){
@@ -60,15 +64,17 @@ public class Crawl implements Callable<Set<String>>{
 							BufferedImage image = null;
 							URL url = new URL(imageUrl);
 					        image = ImageIO.read(url);
-					        String mPath = getPath(url.toString());
+					        String mPath = base + getPath(url.toString());
+					        File mfile = new File(mPath);
+							if(!mfile.exists()){if(mfile.mkdir()){}}
 					        String mName = getFname(url.toString(), false);
-					        ImageIO.write(image, "png",new File(base + mPath + mName));
+					        ImageIO.write(image, "png",new File(mPath + mName));
 					        images.add(imageUrl);
 						}
 						
 					}
 				}
-			}
+			}*/
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -76,12 +82,29 @@ public class Crawl implements Callable<Set<String>>{
 	}
 
 	private String getPath(String url2) {
-		// TODO Auto-generated method stub
-		return null;
+		//remove https:// or http://
+		url2 = url2.substring(url2.indexOf("//")+2);
+		int lastSlash = url2.lastIndexOf('/');
+		if(lastSlash != -1){
+			return url2.substring(0, lastSlash + 1);
+		}else{
+			return url2 + "/";
+		}
 	}
 
 	private String getFname(String url2, Boolean isHTML) {
-		// TODO Auto-generated method stub
-		return null;
+		url2 = url2.substring(url2.indexOf("//")+2);
+		int lastSlash = url2.lastIndexOf('/');
+		if(lastSlash != -1){
+			url2 = url2.substring(lastSlash + 1); 
+		}
+		if(isHTML){
+			if(url2.contains(".html")){
+				return url2;
+			}else{
+				return url2 + ".html";
+			}
+		}
+		return url2;
 	}						
 }
