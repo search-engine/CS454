@@ -104,7 +104,7 @@ public class Crawl implements Callable<Set<String>>{
 			url2 = url2.substring(lastSlash + 1); 
 		}
 		if(isHTML){
-			if(url2.contains(".html")){
+			if(url2.contains(".html")||url2.contains(".htm")){
 				return url2;
 			}else{
 				return url2 + ".html";
