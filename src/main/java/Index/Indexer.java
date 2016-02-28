@@ -1,5 +1,6 @@
 package Index;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +9,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.tika.exception.TikaException;
+import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.html.HtmlParser;
 import org.apache.tika.sax.BodyContentHandler;
@@ -19,11 +22,9 @@ import url.UrlLink;
 
 public class Indexer {
 	
-	public Set<String> docs = new HashSet<String>();
-	public HashMap<String, IndexWords> index = new HashMap<String, IndexWords>();
-	public Set<String> stopwordset = new HashSet<String>();
-	
-	
+	private static HashMap<String, IndexWords> index = new HashMap<String, IndexWords>();
+	private static Set<String> stopwordset = new HashSet<String>();
+
 	public static String[] stopwords = { "a", "as", "able", "about", "above",
 			"according", "accordingly", "across", "actually", "after",
 			"afterwards", "again", "against", "aint", "all", "allow", "allows",
@@ -108,26 +109,37 @@ public class Indexer {
 			"yourselves", "zero" };	
 	
 	
-	private void indexer(String urllink) throws IOException, SAXException, TikaException {
+	public static void indexer(String urllink) throws IOException, SAXException, TikaException {
 		
 		for(String stopword : stopwords) {
 			stopwordset.add(stopword);
 		}
-		
-		InputStream input = new FileInputStream(urllink);
+		AutoDetectParser parser = new AutoDetectParser();
+		InputStream stream = TikaInputStream.get(new File(urllink));
         ContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
-        new HtmlParser().parse(input, handler, metadata, new ParseContext());
+        parser.parse(stream, handler, metadata, new ParseContext());
         String plainText = handler.toString();
+        stream.close();
+
+		
         String[] info = plainText.split(" ");
+        
         for(String s : info) {
         	if(!stopwordset.contains(s)){
-	        	IndexWords word = new IndexWords();
-	        	word.setWord(s);
+        		IndexWords word = null;
+        		if(index.containsKey(s)) {
+        			word = index.get(s);
+        		}else{
+        			word = new IndexWords();
+        			index.put(s, word);
+        		}
 	        	word.setDocument(urllink);
-	        	index.put(s, word);
 	        }
         }
-        
+	}
+	
+	public static HashMap<String, IndexWords> getALlTerms(){
+		return index;
 	}
 }

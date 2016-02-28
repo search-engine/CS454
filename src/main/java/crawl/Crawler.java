@@ -1,6 +1,7 @@
 package crawl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -10,6 +11,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.tika.exception.TikaException;
+import org.xml.sax.SAXException;
+
+import Index.Indexer;
 import url.UrlLink;
 
 
@@ -92,10 +97,25 @@ public class Crawler {
 			while(!executor.isTerminated()){}
 			depth--;
 		}
+			
 			for(String u: urlSet.keySet()){
 				UrlLink urllink = urlSet.get(u);
 				System.out.println(u+" has in: "+urllink.linkFromSize()+ " out: "+urllink.linkToSize());
+				try {
+					Indexer.indexer(u);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TikaException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+			
+			Indexer.getALlTerms();
 	   }
 
 

@@ -1,9 +1,6 @@
 package Index;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class IndexWords {
 
@@ -13,35 +10,11 @@ public class IndexWords {
 		return document;
 	}
 	public void setDocument(String url) {
-		int count = 0;
-		for(Map.Entry<String,Integer> entry : document.entrySet()) {
-			if(entry.getKey().equals(url)) {
-				int cnt = entry.getValue();
-				document.put(url, cnt++);
-			}
+		if(document.containsKey(url)){
+			document.put(url, document.get(url)+1);
+		}else{
+			document.put(url, 1);
 		}
-		document.put(url, count++);
 	}
 
-
-	private String word;
-	private int position;
-
-	public String getWord() {
-		return word;
-	}
-	public void setWord(String word) {
-		this.word = word;
-	}
-	public int getPosition() {
-		return position;
-	}
-	public void setPosition(int position) {
-		this.position = position;
-	}
-	
-
-	public IndexWords() {
-		
-	}
 }
