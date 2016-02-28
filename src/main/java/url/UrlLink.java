@@ -7,7 +7,6 @@ public class UrlLink {
 	private String url;
 	private Set<UrlLink> linkFrom;
 	private Set<UrlLink> linkTo;
-	private String baseUrl;
 	
 	public UrlLink(String url){
 		this.url = url;
@@ -16,8 +15,8 @@ public class UrlLink {
 		
 	}
 
-	public String getBaseUrl() {
-		return baseUrl;
+	public String getUrl() {
+		return url;
 	}
 	
 	public void addLinkTo(UrlLink urlFrom){
