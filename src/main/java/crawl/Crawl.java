@@ -32,12 +32,11 @@ public class Crawl implements Callable<Set<String>>{
 	public Set<String> call() throws Exception {
 		Set<String> linkSet = new HashSet<String>();
 		try {
-			Document doc = Jsoup.connect(url).ignoreContentType(true).userAgent("Mozilla").get();
 			String path = base + getPath(url);
 			System.out.println(url + " path---> " + path);
 			File file = new File(path);
-			if(!file.exists()){if(file.mkdir()){System.out.println("path created "+path);}}
-			
+			if(!file.exists()){if(file.mkdirs()){System.out.println("path created "+path);}}
+			Document doc = Jsoup.connect(url).ignoreContentType(true).userAgent("Mozilla").get();
 			if(depth > 0){
 				Elements links = doc.select("a[href]");
 				for(Element link : links){	

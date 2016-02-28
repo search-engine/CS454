@@ -55,13 +55,7 @@ public class Crawler {
 		
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
 		url = urlTrim(url);
-		addURL(url);
-		File file = new File(System.getProperty("user.dir")+"/url/");
-		if(!file.exists()){
-			if(file.mkdir()){
-				System.out.println("created url directory");
-			}
-		}		
+		addURL(url);		
 		while(depth >= 0){
 			Queue<String> urlQueue2 = new LinkedList<String>();
 			while(!urlQueue.isEmpty()){
@@ -118,6 +112,9 @@ public class Crawler {
 	}
 	
 	private static String urlTrim(String u){
+		if(u.contains("?")){
+			u = u.substring(0, u.indexOf("?"));
+		}
 		//remove after ;
 		if(u.contains(";")){
 			u = u.substring(0, u.indexOf(";"));
