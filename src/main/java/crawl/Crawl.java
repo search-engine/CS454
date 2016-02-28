@@ -1,9 +1,12 @@
 package crawl;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,12 +35,11 @@ public class Crawl implements Callable<Set<String>>{
 	public Set<String> call() throws Exception {
 		Set<String> linkSet = new HashSet<String>();
 		try {
-			Document doc = Jsoup.connect(url).ignoreContentType(true).userAgent("Mozilla").get();
 			String path = base + getPath(url);
 			System.out.println(url + " path---> " + path);
 			File file = new File(path);
-			if(!file.exists()){if(file.mkdir()){System.out.println("path created "+path);}}
-			
+			if(!file.exists()){if(file.mkdirs()){System.out.println("path created "+path);}}
+			Document doc = Jsoup.connect(url).ignoreContentType(true).userAgent("Mozilla").get();
 			if(depth > 0){
 				Elements links = doc.select("a[href]");
 				for(Element link : links){	
@@ -57,29 +59,54 @@ public class Crawl implements Callable<Set<String>>{
 			FileOutputStream fos = new FileOutputStream(path + fname);
 			fos.write(bytes);
 			fos.close();
-			/*
-			if(isHTML) {
+			
+			if(isHTML) {				
 				for(Element img : doc.select("img")){
 					if(img.baseUri().equals(doc.baseUri())){
 						String imageUrl = img.absUrl("src");
 						if(imageUrl.contains(";")){
 							imageUrl = imageUrl.substring(0, imageUrl.indexOf(";"));
 						}
+						if(imageUrl.contains("?")){
+							imageUrl = imageUrl.substring(0,imageUrl.indexOf("?"));
+						}
 						if(!images.contains(imageUrl)){
-							BufferedImage image = null;
-							URL url = new URL(imageUrl);
-					        image = ImageIO.read(url);
-					        String mPath = base + getPath(url.toString());
-					        File mfile = new File(mPath);
-							if(!mfile.exists()){if(mfile.mkdir()){}}
-					        String mName = getFname(url.toString(), false);
-					        ImageIO.write(image, "png",new File(mPath + mName));
-					        images.add(imageUrl);
+							
+							String mPath = base + getPath(imageUrl);
+							String mName = getFname(imageUrl, false);
+							System.out.println("image url:"+imageUrl+"---"+mPath);
+							File imFile = new File(mPath);
+							if(!imFile.exists()){
+								if(imFile.mkdirs()){
+								}
+							}
+							URL imgUrl = new URL(imageUrl);
+							InputStream in = new BufferedInputStream(imgUrl.openStream());
+							ByteArrayOutputStream out = new ByteArrayOutputStream();
+							byte[] buf = new byte[4096];
+
+							int n = 0;
+							while (-1!=(n=in.read(buf)))
+							{
+							   out.write(buf, 0, n);
+							}
+							out.close();
+							in.close();
+							
+							byte[] imageResponse = out.toByteArray();
+							System.out.println("m path "+mPath + mName);
+							FileOutputStream imageFos = new FileOutputStream(mPath + mName);
+							imageFos.write(imageResponse);
+							imageFos.close();
+
+							
+							
+							
 						}
 						
 					}
 				}
-			}*/
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -89,10 +116,14 @@ public class Crawl implements Callable<Set<String>>{
 	private String getPath(String url2) {
 		//remove https:// or http://
 		url2 = url2.substring(url2.indexOf("//")+2);
+		System.out.println("url2: "+url2);
 		int lastSlash = url2.lastIndexOf('/');
+		System.out.println(lastSlash);
 		if(lastSlash != -1){
+			System.out.println("url2 substr 1:"+url2.substring(0, lastSlash + 1));
 			return url2.substring(0, lastSlash + 1);
 		}else{
+			System.out.println("url2 substr 2:"+url2 + "/");
 			return url2 + "/";
 		}
 	}
