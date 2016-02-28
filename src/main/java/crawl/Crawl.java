@@ -40,8 +40,14 @@ public class Crawl implements Callable<Set<String>>{
 			
 			if(depth > 0){
 				Elements links = doc.select("a[href]");
-				for(Element link : links){		
-					linkSet.add(link.attr("abs:href"));
+				for(Element link : links){	
+					try {
+						Response res = Jsoup.connect(link.attr("abs:href")).execute();
+						
+						linkSet.add(res.url().toString());
+					}catch(Exception e) {
+						
+					}
 				}
 			}
 			byte[] bytes = Jsoup.connect(url).maxBodySize(0).ignoreContentType(true).execute().bodyAsBytes();
