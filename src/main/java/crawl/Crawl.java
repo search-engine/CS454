@@ -43,7 +43,6 @@ public class Crawl implements Callable<Set<String>>{
 				for(Element link : links){	
 					try {
 						Response res = Jsoup.connect(link.attr("abs:href")).execute();
-						
 						linkSet.add(res.url().toString());
 					}catch(Exception e) {
 						
