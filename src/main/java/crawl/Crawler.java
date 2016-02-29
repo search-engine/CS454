@@ -1,9 +1,10 @@
 package crawl;
 
-import java.io.File;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -14,6 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.tika.exception.TikaException;
 import org.xml.sax.SAXException;
 
+import Index.IndexWords;
 import Index.Indexer;
 import url.UrlLink;
 
@@ -116,7 +118,13 @@ public class Crawler {
 				}
 			}
 			
-			Indexer.getALlTerms();
+			System.out.println(Indexer.getALlTerms().size());
+//			for(Map.Entry<String, IndexWords>key : Indexer.getALlTerms().entrySet()) {
+//				System.out.println("Key" + key.getKey());
+//				System.out.println("values" + key.getValue().getDocument());
+//				System.out.println("------------------------------");
+//			}
+			//System.out.println(Indexer.getALlTerms());
 	   }
 
 

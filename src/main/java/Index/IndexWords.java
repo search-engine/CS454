@@ -5,7 +5,16 @@ import java.util.HashMap;
 public class IndexWords {
 
 	private HashMap<String, Integer> document =  new HashMap<String, Integer>();
+	private String content;
 	
+	
+	
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
 	public HashMap<String, Integer> getDocument() {
 		return document;
 	}

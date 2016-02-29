@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -114,10 +115,14 @@ public class Indexer {
 		for(String stopword : stopwords) {
 			stopwordset.add(stopword);
 		}
+		try {
 		AutoDetectParser parser = new AutoDetectParser();
+		Tika tika = new Tika();
+		String content = tika.detect(new File(urllink));
 		InputStream stream = TikaInputStream.get(new File(urllink));
         ContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
+
         parser.parse(stream, handler, metadata, new ParseContext());
         String plainText = handler.toString();
         stream.close();
@@ -135,8 +140,10 @@ public class Indexer {
         			index.put(s, word);
         		}
 	        	word.setDocument(urllink);
+	        	//word.setContent(content);
 	        }
         }
+		}catch(Exception e) {}
 	}
 	
 	public static HashMap<String, IndexWords> getALlTerms(){
