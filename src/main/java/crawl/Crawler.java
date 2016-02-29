@@ -103,19 +103,7 @@ public class Crawler {
 			for(String u: urlSet.keySet()){
 				UrlLink urllink = urlSet.get(u);
 				System.out.println(u+" has in: "+urllink.linkFromSize()+ " out: "+urllink.linkToSize());
-				
-				try {
-					Indexer.indexer(urllink.getPath());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SAXException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (TikaException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				Indexer.indexer(urllink.getPath());
 			}
 			
 			System.out.println(Indexer.getALlTerms().size());

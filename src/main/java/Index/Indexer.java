@@ -110,7 +110,7 @@ public class Indexer {
 			"yourselves", "zero" };	
 	
 	
-	public static void indexer(String urllink) throws IOException, SAXException, TikaException {
+	public static void indexer(String urllink){
 		
 		for(String stopword : stopwords) {
 			stopwordset.add(stopword);
