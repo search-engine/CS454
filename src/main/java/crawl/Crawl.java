@@ -17,18 +17,19 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import Index.Indexer;
-
+import url.UrlLink;
 
 public class Crawl implements Callable<Set<String>>{
-	private String url;
+	private UrlLink link;
 	private int depth;
 	private String base = System.getProperty("user.dir") + "/url/";
     private static Set<String> images = new HashSet<String>();
+    private String url;
 	
-	public Crawl(String url, int depth) {
-		this.url = url;
+	public Crawl(UrlLink link, int depth) {
+		this.link = link;
 		this.depth = depth;
+		this.url = link.getUrl();
 	}
 
 	public Set<String> call() throws Exception {
@@ -55,7 +56,8 @@ public class Crawl implements Callable<Set<String>>{
 			String contentType = response.contentType();
 			Boolean isHTML = contentType.contains("text/html");
 			String fname = getFname(url, isHTML);
-			FileOutputStream fos = new FileOutputStream(path + fname);
+			link.setPath(path + fname);
+			FileOutputStream fos = new FileOutputStream(link.getPath());
 			fos.write(bytes);
 			fos.close();
 			
@@ -115,14 +117,14 @@ public class Crawl implements Callable<Set<String>>{
 	private String getPath(String url2) {
 		//remove https:// or http://
 		url2 = url2.substring(url2.indexOf("//")+2);
-		System.out.println("url2: "+url2);
+		//System.out.println("url2: "+url2);
 		int lastSlash = url2.lastIndexOf('/');
-		System.out.println(lastSlash);
+		//System.out.println(lastSlash);
 		if(lastSlash != -1){
-			System.out.println("url2 substr 1:"+url2.substring(0, lastSlash + 1));
+			//System.out.println("url2 substr 1:"+url2.substring(0, lastSlash + 1));
 			return url2.substring(0, lastSlash + 1);
 		}else{
-			System.out.println("url2 substr 2:"+url2 + "/");
+			//System.out.println("url2 substr 2:"+url2 + "/");
 			return url2 + "/";
 		}
 	}

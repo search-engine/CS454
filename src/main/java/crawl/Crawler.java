@@ -23,7 +23,7 @@ public class Crawler {
 	private static int depth = -1;
 	private static boolean isExtraction = false;
 	private static HashMap<String, UrlLink> urlSet = new HashMap<String, UrlLink>();
-	private static Queue<String> urlQueue = new LinkedList<String>();
+	private static Queue<UrlLink> urlQueue = new LinkedList<UrlLink>();
  	public static void main(String[] args) {
 		int index = 0;
  		while(index < args.length){
@@ -62,7 +62,7 @@ public class Crawler {
 		url = urlTrim(url);
 		addURL(url);		
 		while(depth >= 0){
-			Queue<String> urlQueue2 = new LinkedList<String>();
+			Queue<UrlLink> urlQueue2 = new LinkedList<UrlLink>();
 			while(!urlQueue.isEmpty()){
 				urlQueue2.add(urlQueue.poll());
 			}
@@ -70,10 +70,10 @@ public class Crawler {
 	        HashMap<String, Future<Set<String>>> resultList = new HashMap<String, Future<Set<String>>>();
 	        
 	        while(!urlQueue2.isEmpty()){
-	        	String url2Crawl = urlQueue2.poll();
-	        	Crawl crawler = new Crawl(url2Crawl, depth);
+	        	UrlLink link2Crawl = urlQueue2.poll();
+	        	Crawl crawler = new Crawl(link2Crawl, depth);
 	        	Future<Set<String>> resultSet = executor.submit(crawler);
-	        	resultList.put(url2Crawl, resultSet);
+	        	resultList.put(link2Crawl.getUrl(), resultSet);
 	        }
 			for(String urlToLink : resultList.keySet()){
 				Future<Set<String>> futureSet = resultList.get(urlToLink);
@@ -101,8 +101,9 @@ public class Crawler {
 			for(String u: urlSet.keySet()){
 				UrlLink urllink = urlSet.get(u);
 				System.out.println(u+" has in: "+urllink.linkFromSize()+ " out: "+urllink.linkToSize());
+				
 				try {
-					Indexer.indexer(u);
+					Indexer.indexer(urllink.getPath());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -124,8 +125,9 @@ public class Crawler {
 			return false;
 		}else if(!urlSet.containsKey(u)){
 			System.out.println("added " + u);
-			urlSet.put(u, new UrlLink(u));
-			return urlQueue.add(u);
+			UrlLink newlink = new UrlLink(u);
+			urlSet.put(u, newlink);
+			return urlQueue.add(newlink);
 		}else{
 			return false;
 		}

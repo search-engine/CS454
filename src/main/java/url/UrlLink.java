@@ -7,6 +7,7 @@ public class UrlLink {
 	private String url;
 	private Set<UrlLink> linkFrom;
 	private Set<UrlLink> linkTo;
+	private String path;
 	
 	public UrlLink(String url){
 		this.url = url;
@@ -34,5 +35,13 @@ public class UrlLink {
 	
 	public int linkToSize(){
 		return this.linkTo.size();
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }
