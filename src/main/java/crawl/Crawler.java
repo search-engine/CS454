@@ -107,11 +107,11 @@ public class Crawler {
 			}
 			
 			System.out.println(Indexer.getALlTerms().size());
-//			for(Map.Entry<String, IndexWords>key : Indexer.getALlTerms().entrySet()) {
-//				System.out.println("Key" + key.getKey());
-//				System.out.println("values" + key.getValue().getDocument());
-//				System.out.println("------------------------------");
-//			}
+			for(Map.Entry<String, IndexWords>key : Indexer.getALlTerms().entrySet()) {
+				System.out.println("Key: " + key.getKey());
+				System.out.println("values" + key.getValue().getDocument());
+				System.out.println("------------------------------");
+			}
 			//System.out.println(Indexer.getALlTerms());
 	   }
 

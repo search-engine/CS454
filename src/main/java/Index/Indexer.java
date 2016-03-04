@@ -125,19 +125,20 @@ public class Indexer {
 
         parser.parse(stream, handler, metadata, new ParseContext());
         String plainText = handler.toString();
+        String trimText = plainText.replaceAll("\\P{L}", " ");
         stream.close();
 
 		
-        String[] info = plainText.split(" ");
+        String[] info = trimText.split("\\s+");
         
         for(String s : info) {
-        	if(!stopwordset.contains(s)){
+        	if(!stopwordset.contains(s.toLowerCase()) && !s.isEmpty() && s.length() > 1){
         		IndexWords word = null;
-        		if(index.containsKey(s)) {
-        			word = index.get(s);
+        		if(index.containsKey(s.toLowerCase())) {
+        			word = index.get(s.toLowerCase());
         		}else{
         			word = new IndexWords();
-        			index.put(s, word);
+        			index.put(s.toLowerCase(), word);
         		}
 	        	word.setDocument(urllink);
 	        	//word.setContent(content);

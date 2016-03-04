@@ -75,7 +75,7 @@ public class Crawl implements Callable<Set<String>>{
 							
 							String mPath = base + getPath(imageUrl);
 							String mName = getFname(imageUrl, false);
-							System.out.println("image url:"+imageUrl+"---"+mPath);
+//							System.out.println("image url:"+imageUrl+"---"+mPath);
 							File imFile = new File(mPath);
 							if(!imFile.exists()){
 								if(imFile.mkdirs()){
@@ -95,7 +95,7 @@ public class Crawl implements Callable<Set<String>>{
 							in.close();
 							
 							byte[] imageResponse = out.toByteArray();
-							System.out.println("m path "+mPath + mName);
+//							System.out.println("m path "+mPath + mName);
 							FileOutputStream imageFos = new FileOutputStream(mPath + mName);
 							imageFos.write(imageResponse);
 							imageFos.close();
