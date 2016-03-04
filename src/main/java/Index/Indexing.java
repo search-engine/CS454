@@ -8,6 +8,7 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 
 public class Indexing {
 	public static void main( String args[] ) {
+
 		File f = null;
 	      File[] paths;
 	      try{     
@@ -27,6 +28,7 @@ public class Indexing {
 	          // if any error occurs
 	          e.printStackTrace();
 	       }
+
 			   
 	}
 }
