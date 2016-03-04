@@ -1,7 +1,6 @@
 package crawl;
 
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -11,9 +10,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import org.apache.tika.exception.TikaException;
-import org.xml.sax.SAXException;
 
 import Index.IndexWords;
 import Index.Indexer;

@@ -99,9 +99,6 @@ public class Crawl implements Callable<Set<String>>{
 							FileOutputStream imageFos = new FileOutputStream(mPath + mName);
 							imageFos.write(imageResponse);
 							imageFos.close();
-
-							
-							
 							
 						}
 						
