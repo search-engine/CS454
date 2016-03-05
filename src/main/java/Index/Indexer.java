@@ -115,6 +115,7 @@ public class Indexer {
 		for(String stopword : stopwords) {
 			stopwordset.add(stopword);
 		}
+		
 		try {
 		AutoDetectParser parser = new AutoDetectParser();
 		Tika tika = new Tika();
@@ -122,7 +123,7 @@ public class Indexer {
 		InputStream stream = TikaInputStream.get(new File(url));
         ContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
-
+        
         parser.parse(stream, handler, metadata, new ParseContext());
         String plainText = handler.toString();
         String trimText = plainText.replaceAll("\\P{L}", " ");
@@ -150,4 +151,5 @@ public class Indexer {
 	public static HashMap<String, IndexWords> getALlTerms(){
 		return index;
 	}
+	
 }

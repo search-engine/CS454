@@ -2,7 +2,6 @@ package Index;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;

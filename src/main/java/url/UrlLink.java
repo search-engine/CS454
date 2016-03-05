@@ -1,5 +1,6 @@
 package url;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,7 +8,7 @@ public class UrlLink {
 	private String url;
 	private Set<UrlLink> linkFrom;
 	private Set<UrlLink> linkTo;
-	private String path;
+	private static HashMap<String, UrlLink> urllinks = new HashMap<String, UrlLink>();
 	
 	public UrlLink(String url){
 		this.url = url;
@@ -36,12 +37,16 @@ public class UrlLink {
 	public int linkToSize(){
 		return this.linkTo.size();
 	}
-
-	public String getPath() {
-		return path;
+	
+	public static boolean addLink(String u){
+		if(urllinks.containsKey(u)){
+			return false;
+		}else{
+			return (urllinks.put(u, new UrlLink(u)) != null);
+		}
 	}
-
-	public void setPath(String path) {
-		this.path = path;
+	
+	public static HashMap<String, UrlLink> getAllLinks(){
+		return urllinks;
 	}
 }
