@@ -7,8 +7,6 @@ public class IndexWords {
 	private HashMap<String, Integer> document =  new HashMap<String, Integer>();
 	private String content;
 	
-	
-	
 	public String getContent() {
 		return content;
 	}

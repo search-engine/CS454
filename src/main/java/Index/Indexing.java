@@ -23,9 +23,10 @@ public class Indexing {
 	        	 
 	             //System.out.println(file.getCanonicalPath());
 	          }
-	          for(Map.Entry<String, IndexWords> word : Indexer.getALlTerms().entrySet()) {
-	        	  System.out.println(word.getKey());
-	        	  System.out.println(word.getValue().getDocument());
+	          for(String word : Indexer.getALlTerms().keySet()) {
+	        	  System.out.println(word);
+	        	  IndexWords iw = Indexer.getALlTerms().get(word);
+	        	  System.out.println(iw.getDocument());
 	          }
 	       }catch(Exception e){
 	          // if any error occurs
