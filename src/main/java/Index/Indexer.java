@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.tika.Tika;
@@ -16,6 +17,8 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.html.HtmlParser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.apache.tika.sax.Link;
+import org.apache.tika.sax.LinkContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -122,7 +125,14 @@ public class Indexer {
 		InputStream stream = TikaInputStream.get(new File(url));
         ContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
+        
+        
+        LinkContentHandler linkhandler=new LinkContentHandler();
+        InputStream stream1 = TikaInputStream.get(new File(url));
+        parser.parse(stream1, linkhandler, metadata, new ParseContext());
+        List<Link> links=linkhandler.getLinks();
 
+        
         parser.parse(stream, handler, metadata, new ParseContext());
         String plainText = handler.toString();
         String trimText = plainText.replaceAll("\\P{L}", " ");
