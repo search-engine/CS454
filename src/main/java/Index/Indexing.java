@@ -13,7 +13,7 @@ public class Indexing {
 	      File[] paths;
 	      try{     
 	          // create new file
-	          f = new File("/Users/anandsuresh/Downloads/en");
+	          f = new File(System.getProperty("user.home")+"/extra/wiki-small");
 	          
 	          // returns pathnames for files and directory
 	          paths = f.listFiles();
@@ -27,8 +27,6 @@ public class Indexing {
 	       }catch(Exception e){
 	          // if any error occurs
 	          e.printStackTrace();
-	       }
-
-			   
+	       }		   
 	}
 }

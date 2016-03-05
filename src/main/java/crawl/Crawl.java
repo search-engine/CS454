@@ -17,29 +17,26 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import url.UrlLink;
 
 public class Crawl implements Callable<Set<String>>{
-	private UrlLink link;
+	private String link;
 	private int depth;
 	private String base = System.getProperty("user.dir") + "/url/";
     private static Set<String> images = new HashSet<String>();
-    private String url;
 	
-	public Crawl(UrlLink link, int depth) {
+	public Crawl(String link, int depth) {
 		this.link = link;
 		this.depth = depth;
-		this.url = link.getUrl();
 	}
 
 	public Set<String> call() throws Exception {
 		Set<String> linkSet = new HashSet<String>();
 		try {
-			String path = base + getPath(url);
-			System.out.println(url + " path---> " + path);
+			String path = base + getPath(link);
+			System.out.println(link + " path---> " + path);
 			File file = new File(path);
 			if(!file.exists()){if(file.mkdirs()){System.out.println("path created "+path);}}
-			Document doc = Jsoup.connect(url).ignoreContentType(true).userAgent("Mozilla").get();
+			Document doc = Jsoup.connect(link).ignoreContentType(true).userAgent("Mozilla").get();
 			if(depth > 0){
 				Elements links = doc.select("a[href]");
 				for(Element link : links){	
@@ -51,16 +48,16 @@ public class Crawl implements Callable<Set<String>>{
 					}
 				}
 			}
-			byte[] bytes = Jsoup.connect(url).maxBodySize(0).ignoreContentType(true).execute().bodyAsBytes();
-			Response response = Jsoup.connect(url).ignoreContentType(true).execute();
+			byte[] bytes = Jsoup.connect(link).maxBodySize(0).ignoreContentType(true).execute().bodyAsBytes();
+			Response response = Jsoup.connect(link).ignoreContentType(true).execute();
 			String contentType = response.contentType();
 			Boolean isHTML = contentType.contains("text/html");
-			String fname = getFname(url, isHTML);
-			link.setPath(path + fname);
-			FileOutputStream fos = new FileOutputStream(link.getPath());
+			String fname = getFname(link, isHTML);
+			System.out.println(link+" is downloaded");
+			FileOutputStream fos = new FileOutputStream(path+fname);
 			fos.write(bytes);
 			fos.close();
-			
+			/*
 			if(isHTML) {				
 				for(Element img : doc.select("img")){
 					if(img.baseUri().equals(doc.baseUri())){
@@ -104,7 +101,7 @@ public class Crawl implements Callable<Set<String>>{
 						
 					}
 				}
-			}
+			}*/
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

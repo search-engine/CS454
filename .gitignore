@@ -13,5 +13,6 @@ hs_err_pid*
 /bin/
 /build/
 /url/
-/src/main/resources/CACM
-/src/main/resources/wiki-small
+/src/main/java/extra/CACM
+/src/main/java/extra/wiki-small
+/src/main/java/extra/wiki-large

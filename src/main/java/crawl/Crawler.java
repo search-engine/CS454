@@ -2,8 +2,8 @@ package crawl;
 
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -11,17 +11,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import Index.IndexWords;
-import Index.Indexer;
-import url.UrlLink;
-
 
 public class Crawler {
 	private static String url;
 	private static int depth = -1;
 	private static boolean isExtraction = false;
-	private static HashMap<String, UrlLink> urlSet = new HashMap<String, UrlLink>();
-	private static Queue<UrlLink> urlQueue = new LinkedList<UrlLink>();
+	private static Set<String> urlSet = new HashSet<String>();
+	private static Queue<String> urlQueue = new LinkedList<String>();
  	public static void main(String[] args) {
 		int index = 0;
  		while(index < args.length){
@@ -60,7 +56,7 @@ public class Crawler {
 		url = urlTrim(url);
 		addURL(url);		
 		while(depth >= 0){
-			Queue<UrlLink> urlQueue2 = new LinkedList<UrlLink>();
+			Queue<String> urlQueue2 = new LinkedList<String>();
 			while(!urlQueue.isEmpty()){
 				urlQueue2.add(urlQueue.poll());
 			}
@@ -68,10 +64,10 @@ public class Crawler {
 	        HashMap<String, Future<Set<String>>> resultList = new HashMap<String, Future<Set<String>>>();
 	        
 	        while(!urlQueue2.isEmpty()){
-	        	UrlLink link2Crawl = urlQueue2.poll();
+	        	String link2Crawl = urlQueue2.poll();
 	        	Crawl crawler = new Crawl(link2Crawl, depth);
 	        	Future<Set<String>> resultSet = executor.submit(crawler);
-	        	resultList.put(link2Crawl.getUrl(), resultSet);
+	        	resultList.put(link2Crawl, resultSet);
 	        }
 			for(String urlToLink : resultList.keySet()){
 				Future<Set<String>> futureSet = resultList.get(urlToLink);
@@ -81,9 +77,7 @@ public class Crawler {
 						System.out.println("found " + u);
 						u = urlTrim(u);
 						System.out.println("found trimed: " + u);
-						if(addURL(u)){
-							urlSet.get(urlToLink).addLinkTo(urlSet.get(u));
-						}
+						addURL(u);
 					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -96,30 +90,14 @@ public class Crawler {
 			depth--;
 		}
 			
-			for(String u: urlSet.keySet()){
-				UrlLink urllink = urlSet.get(u);
-				System.out.println(u+" has in: "+urllink.linkFromSize()+ " out: "+urllink.linkToSize());
-				Indexer.indexer(urllink.getPath());
-			}
-			
-			System.out.println(Indexer.getALlTerms().size());
-			for(Map.Entry<String, IndexWords>key : Indexer.getALlTerms().entrySet()) {
-				System.out.println("Key: " + key.getKey());
-				System.out.println("values" + key.getValue().getDocument());
-				System.out.println("------------------------------");
-			}
-			//System.out.println(Indexer.getALlTerms());
 	   }
 
 
 	private static boolean addURL(String u) {
 		if(u == null || !(u.contains("https://")||u.contains("http://"))){
 			return false;
-		}else if(!urlSet.containsKey(u)){
-			System.out.println("added " + u);
-			UrlLink newlink = new UrlLink(u);
-			urlSet.put(u, newlink);
-			return urlQueue.add(newlink);
+		}else if(urlSet.add(u)){
+			return urlQueue.add(u);
 		}else{
 			return false;
 		}

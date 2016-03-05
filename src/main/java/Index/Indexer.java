@@ -110,7 +110,7 @@ public class Indexer {
 			"yourselves", "zero" };	
 	
 	
-	public static void indexer(String urllink){
+	public static void indexer(String url){
 		
 		for(String stopword : stopwords) {
 			stopwordset.add(stopword);
@@ -118,8 +118,8 @@ public class Indexer {
 		try {
 		AutoDetectParser parser = new AutoDetectParser();
 		Tika tika = new Tika();
-		String content = tika.detect(new File(urllink));
-		InputStream stream = TikaInputStream.get(new File(urllink));
+		String content = tika.detect(new File(url));
+		InputStream stream = TikaInputStream.get(new File(url));
         ContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
 
@@ -140,7 +140,7 @@ public class Indexer {
         			word = new IndexWords();
         			index.put(s.toLowerCase(), word);
         		}
-	        	word.setDocument(urllink);
+	        	word.setDocument(url);
 	        	//word.setContent(content);
 	        }
         }
