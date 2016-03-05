@@ -122,19 +122,24 @@ public class Indexer {
         InputStream stream1 = TikaInputStream.get(new File(url));
         parser.parse(stream1, linkhandler, metadata, new ParseContext());
         List<Link> links=linkhandler.getLinks();
+        Set<String> uris = new HashSet<String>();
         for(Link link: links){
-        	String uri = link.getUri();
-        	File newfile = new File(url+uri);
-        	System.out.println(newfile.getAbsoluteFile());
+        	if(link.isAnchor()){
+        		String uri = link.getUri();
+            	uris.add(uri);
+        	}
         }
-
-        
         parser.parse(stream, handler, metadata, new ParseContext());
         String plainText = handler.toString();
         String trimText = plainText.replaceAll("\\P{L}", " ");
         stream.close();
 
-		
+		for(String uri : uris){
+			getRealPath(url, uri);
+			//System.out.println(uri);
+		}
+        
+        
         String[] info = trimText.split("\\s+");
         
         for(String s : info) {
@@ -152,6 +157,16 @@ public class Indexer {
 		}catch(Exception e) {}
 	}
 	
+	private static String getRealPath(String url, String uri) {
+		System.out.println(url);
+		while(uri.substring(0, 3).equals("../")){
+			uri = uri.substring(3);
+			url = url.substring(0, url.lastIndexOf('/'));
+			System.out.println(url+uri);
+		}
+		return url+uri;
+	}
+
 	public static HashMap<String, IndexWords> getALlTerms(){
 		return index;
 	}

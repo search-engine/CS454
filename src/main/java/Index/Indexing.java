@@ -12,7 +12,7 @@ public class Indexing {
 		File f = null;
 	      try{     
 	          // create new file
-	          f = new File(System.getProperty("User.home")+"/extra/wiki-small");
+	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/0/");
 	          //Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
 	          List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 	          // for each pathname in pathname array
@@ -23,11 +23,12 @@ public class Indexing {
 	        	 
 	             //System.out.println(file.getCanonicalPath());
 	          }
+	          /*
 	          for(String word : Indexer.getALlTerms().keySet()) {
 	        	  System.out.println(word);
 	        	  IndexWords iw = Indexer.getALlTerms().get(word);
 	        	  System.out.println(iw.getDocument());
-	          }
+	          }*/
 	       }catch(Exception e){
 	          // if any error occurs
 	          e.printStackTrace();
