@@ -122,6 +122,11 @@ public class Indexer {
         InputStream stream1 = TikaInputStream.get(new File(url));
         parser.parse(stream1, linkhandler, metadata, new ParseContext());
         List<Link> links=linkhandler.getLinks();
+        for(Link link: links){
+        	String uri = link.getUri();
+        	File newfile = new File(url+uri);
+        	System.out.println(newfile.getAbsoluteFile());
+        }
 
         
         parser.parse(stream, handler, metadata, new ParseContext());

@@ -12,22 +12,22 @@ public class Indexing {
 		File f = null;
 	      try{     
 	          // create new file
-	          f = new File("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
-	          Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
-	          //List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+	          f = new File(System.getProperty("User.home")+"/extra/wiki-small");
+	          //Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
+	          List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 	          // for each pathname in pathname array
-//	          for(File file:files)
-//	          {
-//	             // prints file and directory paths
-//	        	 Indexer.indexer(file.getCanonicalPath());
-//	        	 
-//	             //System.out.println(file.getCanonicalPath());
-//	          }
-//	          for(String word : Indexer.getALlTerms().keySet()) {
-//	        	  System.out.println(word);
-//	        	  IndexWords iw = Indexer.getALlTerms().get(word);
-//	        	  System.out.println(iw.getDocument());
-//	          }
+	          for(File file:files)
+	          {
+	             // prints file and directory paths
+	        	 Indexer.indexer(file.getCanonicalPath());
+	        	 
+	             //System.out.println(file.getCanonicalPath());
+	          }
+	          for(String word : Indexer.getALlTerms().keySet()) {
+	        	  System.out.println(word);
+	        	  IndexWords iw = Indexer.getALlTerms().get(word);
+	        	  System.out.println(iw.getDocument());
+	          }
 	       }catch(Exception e){
 	          // if any error occurs
 	          e.printStackTrace();
