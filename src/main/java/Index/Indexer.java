@@ -187,21 +187,19 @@ public class Indexer {
 			String[] infoArr = plainText.split("\\s+");
 			
 	        for(String s : infoArr) {
-        	if(!stopwordset.contains(s.toLowerCase()) && !s.isEmpty() && s.length() > 1){
-        		IndexWords word = null;
-        		if(index.containsKey(s.toLowerCase())) {
-        			word = index.get(s.toLowerCase());
-        		}else{
-        			word = new IndexWords();
-        			index.put(s.toLowerCase(), word);
-        		}
-	        	word.setDocument(url);
-	        }
-        }
-			
-			
+	        	s = s.replaceAll("[^a-zA-Z]", "").toLowerCase();
+        		if(!stopwordset.contains(s) && !s.isEmpty() && s.length() > 1){
+        			IndexWords word = null;
+        			if(index.containsKey(s)) {
+        				word = index.get(s);
+        			}else{
+        				word = new IndexWords();
+        				index.put(s, word);
+        			}
+	        		word.setDocument(url);
+	        	}
+	        }	
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

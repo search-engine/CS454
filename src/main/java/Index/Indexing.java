@@ -14,7 +14,7 @@ public class Indexing {
 		File f = null;
 	      try{     
 	          // create new file
-	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/");
+	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/0/");
 	          //Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
 	          List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 	          Set<String> filepath = new HashSet<String>();
