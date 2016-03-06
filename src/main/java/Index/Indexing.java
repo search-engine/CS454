@@ -1,7 +1,9 @@
 package Index;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -12,14 +14,19 @@ public class Indexing {
 		File f = null;
 	      try{     
 	          // create new file
-	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/0/");
+	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/");
 	          //Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
 	          List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+	          Set<String> filepath = new HashSet<String>();
+	          for(File file: files){
+	        	  filepath.add(file.getCanonicalPath());
+	          }
+	          
 	          // for each pathname in pathname array
-	          for(File file:files)
+	          for(String file: filepath)
 	          {
 	             // prints file and directory paths
-	        	 Indexer.indexer(file.getCanonicalPath());
+	        	 Indexer.indexer(file, filepath);
 	        	 
 	             //System.out.println(file.getCanonicalPath());
 	          }

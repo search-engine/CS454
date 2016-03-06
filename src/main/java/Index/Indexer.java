@@ -1,6 +1,7 @@
 package Index;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,11 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.Link;
 import org.apache.tika.sax.LinkContentHandler;
+import org.jsoup.Jsoup;
+import org.jsoup.Connection.Response;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.xml.sax.ContentHandler;
 
 public class Indexer {
@@ -106,43 +112,81 @@ public class Indexer {
 			"yourselves", "zero" };	
 	
 	
-	public static void indexer(String url){
+	public static void indexer(String url, Set<String> filepath){
 		
 		for(String stopword : stopwords) {
 			stopwordset.add(stopword);
 		}
 		
+//		try {
+//		AutoDetectParser parser = new AutoDetectParser();
+//		InputStream stream = TikaInputStream.get(new File(url));
+//        ContentHandler handler = new BodyContentHandler();
+//        Metadata metadata = new Metadata();
+//       
+//        LinkContentHandler linkhandler=new LinkContentHandler();
+//        InputStream stream1 = TikaInputStream.get(new File(url));
+//        parser.parse(stream1, linkhandler, metadata, new ParseContext());
+//        List<Link> links=linkhandler.getLinks();
+//        Set<String> uris = new HashSet<String>();
+//        for(Link link: links){
+//        	if(link.isAnchor()){
+//        		String uri = link.getUri();
+//            	uris.add(uri);
+//        	}
+//        }
+//        parser.parse(stream, handler, metadata, new ParseContext());
+//        String plainText = handler.toString();
+//        String trimText = plainText.replaceAll("\\P{L}", " ");
+//        stream.close();
+//
+//		for(String uri : uris){
+//			getRealPath(url, uri);
+//			System.out.println(uri);
+//		}
+        
+        
+//        String[] info = trimText.split("\\s+");
+        
+//        for(String s : info) {
+//        	if(!stopwordset.contains(s.toLowerCase()) && !s.isEmpty() && s.length() > 1){
+//        		IndexWords word = null;
+//        		if(index.containsKey(s.toLowerCase())) {
+//        			word = index.get(s.toLowerCase());
+//        		}else{
+//        			word = new IndexWords();
+//        			index.put(s.toLowerCase(), word);
+//        		}
+//	        	word.setDocument(url);
+//	        }
+//        }
+//		}catch(Exception e) {}
+		
 		try {
-		AutoDetectParser parser = new AutoDetectParser();
-		InputStream stream = TikaInputStream.get(new File(url));
-        ContentHandler handler = new BodyContentHandler();
-        Metadata metadata = new Metadata();
-       
-        LinkContentHandler linkhandler=new LinkContentHandler();
-        InputStream stream1 = TikaInputStream.get(new File(url));
-        parser.parse(stream1, linkhandler, metadata, new ParseContext());
-        List<Link> links=linkhandler.getLinks();
-        Set<String> uris = new HashSet<String>();
-        for(Link link: links){
-        	if(link.isAnchor()){
-        		String uri = link.getUri();
-            	uris.add(uri);
-        	}
-        }
-        parser.parse(stream, handler, metadata, new ParseContext());
-        String plainText = handler.toString();
-        String trimText = plainText.replaceAll("\\P{L}", " ");
-        stream.close();
-
-		for(String uri : uris){
-			getRealPath(url, uri);
-			//System.out.println(uri);
-		}
-        
-        
-        String[] info = trimText.split("\\s+");
-        
-        for(String s : info) {
+			Document document = Jsoup.parse(new File(url),"UTF-8");
+			Set<String> linkSet = new HashSet<String>();
+			Elements links = document.select("a[href]");
+			for(Element element: links){
+				//System.out.println(element.baseUri());
+				//System.out.println(element.);
+				String href = element.attr("href");
+				
+				
+				if(href == null || href != null &&(href.length() == 0 || href.startsWith("#") || href.contains("http://")||href.contains("https://"))){
+					continue;
+				}
+				String u = getRealPath(url, href);
+				if(filepath.contains(u)){
+					System.out.println(u);
+				}
+				
+				
+			}
+			
+			String plainText = document.text();
+			String[] infoArr = plainText.split("\\s+");
+			
+	        for(String s : infoArr) {
         	if(!stopwordset.contains(s.toLowerCase()) && !s.isEmpty() && s.length() > 1){
         		IndexWords word = null;
         		if(index.containsKey(s.toLowerCase())) {
@@ -154,17 +198,29 @@ public class Indexer {
 	        	word.setDocument(url);
 	        }
         }
-		}catch(Exception e) {}
+			
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 	
 	private static String getRealPath(String url, String uri) {
-		System.out.println(url);
+		//System.out.println(url);
+		if(url.charAt(url.length()-1) == '\\'){
+			url = url.substring(0, url.length()-1);
+		}
+		url = url.substring(0, url.lastIndexOf('\\'));
+		//System.out.println(url);
 		while(uri.substring(0, 3).equals("../")){
 			uri = uri.substring(3);
-			url = url.substring(0, url.lastIndexOf('/'));
-			System.out.println(url+uri);
+			url = url.substring(0, url.lastIndexOf('\\'));
 		}
-		return url+uri;
+		return url+uri.replace('/', '\\');
 	}
 
 	public static HashMap<String, IndexWords> getALlTerms(){
