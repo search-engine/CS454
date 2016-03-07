@@ -1,8 +1,11 @@
 package Index;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -33,17 +36,39 @@ public class Indexing {
 	        	 Indexer.indexer(link);
 	             //System.out.println(file.getCanonicalPath());
 	          }
-	          IndexWords iw;
-	          int totalcount;
-	          double idf, tfidf;
-	          double tf;
-	          for(String word : Indexer.getALlTerms().keySet()){
-	        	  iw = Indexer.getALlTerms().get(word);
-	        	  idf = iw.getIDF(UrlLink.getAllLinks().size());
-	        	  for(String doc : iw.getDocument().keySet()){
-	        		  tf = iw.getDocument().get(doc).doubleValue();
-	        		  totalcount = UrlLink.getAllLinks().get(doc).getTotalWordCount();
-	        		  tfidf = tf/totalcount * idf;
+	          
+	          
+	        //init rank
+	          double initRank = 1.0/UrlLink.getAllLinks().size();
+	          for (Entry<String, UrlLink> entry : UrlLink.getAllLinks().entrySet()) {
+	              entry.getValue().initPageRank(initRank);
+	          }
+	          
+	          boolean refined = false;
+	          while(!refined){
+	        	  for (Entry<String, UrlLink> entry : UrlLink.getAllLinks().entrySet()) {
+		              entry.getValue().calculateRank();
+		          }
+	        	  refined = true;
+	        	  for (Entry<String, UrlLink> entry : UrlLink.getAllLinks().entrySet()) {
+		              refined = entry.getValue().confirmRank(0.01) && refined;
+		          }
+	          }
+	          
+	          for (Entry<String, UrlLink> entry : UrlLink.getAllLinks().entrySet()) {
+	              System.out.println(entry.getKey()+" "+entry.getValue().getPageRank());
+	          }
+	          
+	          /*
+	          for(Entry<String, IndexWords> entry : Indexer.getALlTerms().entrySet()){
+	        	  String word = entry.getKey();
+	        	  IndexWords iw = entry.getValue();
+	        	  double idf = iw.getIDF(UrlLink.getAllLinks().size());
+	        	  for(Entry<String, Integer> entry2 : iw.getDocument().entrySet()){
+	        		  String doc = entry2.getKey();
+	        		  double tf = entry2.getValue().doubleValue();
+	        		  int totalcount = UrlLink.getAllLinks().get(doc).getTotalWordCount();
+	        		  double tfidf = tf/totalcount * idf;
 	        		  System.out.println(doc+" word: "+ word+" "+tfidf);
 	        	  }
 	          }
@@ -59,4 +84,5 @@ public class Indexing {
 	          e.printStackTrace();
 	       }		   
 	}
+	
 }
