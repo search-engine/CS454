@@ -11,13 +11,16 @@ public class UrlLink {
 	private int totalWordCount = 0;
 	private static HashMap<String, UrlLink> urllinks = new HashMap<String, UrlLink>();
 	private double pageRank;
+	private double refPageRank;
+	private static final double lamda = 0.15;
+	private final double oneMinusLamda = 1 - lamda;
+	private double lamdaOverN;
 	
 	public UrlLink(String url){
 		this.url = url;
 		linkFrom = new HashSet<UrlLink>();
 		linkTo = new HashSet<UrlLink>();
 		setTotalWordCount(0);
-		setPageRank(0);
 	}
 
 	public String getUrl() {
@@ -57,7 +60,7 @@ public class UrlLink {
 		return urllinks;
 	}
 
-	public int getTotalWordCount() {
+	public int getTotalWordCount(){
 		return totalWordCount;
 	}
 
@@ -65,12 +68,32 @@ public class UrlLink {
 		this.totalWordCount = totalWordCount;
 	}
 
-	public double getPageRank() {
+	public double getPageRank(){
 		return pageRank;
 	}
 
-	public void setPageRank(double pageRank) {
-		this.pageRank = pageRank;
+	public void calculateRank(){
+		this.refPageRank = 0;
+		for(UrlLink link: linkFrom){
+			this.refPageRank += link.getPageRank()/link.linkToSize();
+		}
+		this.refPageRank = this.lamdaOverN + this.oneMinusLamda*this.refPageRank;
 	}
 	
+	public boolean confirmRank(double diff){
+		if(Math.abs(this.refPageRank - this.pageRank) > diff){
+			this.pageRank = this.refPageRank;
+			return false;
+		}else{
+			this.pageRank = this.refPageRank;
+			return true;
+		}
+	}
+
+	public void initPageRank(double pageRank) {
+		this.pageRank = pageRank;
+		this.refPageRank = 10;
+		this.lamdaOverN = lamda/urllinks.size();
+	}
+
 }

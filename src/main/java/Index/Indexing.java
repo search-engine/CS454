@@ -1,13 +1,13 @@
 package Index;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
+
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -15,8 +15,9 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import url.UrlLink;
 
 public class Indexing {
+	private static final double tfidfRatio = 0.85;
+	private static final double pageRankRatio = 0.15;
 	public static void main( String args[] ) {
-
 		File f = null;
 	      try{     
 	          // create new file
@@ -37,29 +38,38 @@ public class Indexing {
 	        	 Indexer.indexer(link);
 	             //System.out.println(file.getCanonicalPath());
 	          }
-	          IndexWords iw;
-	          int totalcount;
-	          double idf, tfidf;
-	          double tf;
-	           
+
 	          
-	          for(String word : Indexer.getALlTerms().keySet()){
-	        	  TreeMap<Double, String> scoreTree = new TreeMap<Double, String>();
-	        	  iw = Indexer.getALlTerms().get(word);
-	        	  idf = iw.getIDF(UrlLink.getAllLinks().size());
-	        	  List<Double> tfIdfList = new ArrayList<Double>();
-	        	  List<String> docList = new ArrayList<String>();
-	        	  
+	        //init rank
+	          double initRank = 1.0/UrlLink.getAllLinks().size();
+	          for (Entry<String, UrlLink> entry : UrlLink.getAllLinks().entrySet()) {
+	              entry.getValue().initPageRank(initRank);
+	          }
+	          
+	          boolean refined = false;
+	          while(!refined){
+	        	  for (Entry<String, UrlLink> entry : UrlLink.getAllLinks().entrySet()) {
+		              entry.getValue().calculateRank();
+		          }
+	        	  refined = true;
+	        	  for (Entry<String, UrlLink> entry : UrlLink.getAllLinks().entrySet()) {
+		              refined = entry.getValue().confirmRank(0.01) && refined;
+		          }
+	          }
+	          
+	          for(Entry<String, IndexWords> entry : Indexer.getALlTerms().entrySet()){
+	        	  String word = entry.getKey();
+	        	  IndexWords iw = entry.getValue();
+	        	  double idf = iw.getIDF(UrlLink.getAllLinks().size());
 	        	  Map<Double, String> scoreMap = new HashMap<Double, String>();
-	        	  
-	        	  for(String doc : iw.getDocument().keySet()){
-	        		  tf = iw.getDocument().get(doc).doubleValue();
-	        		  totalcount = UrlLink.getAllLinks().get(doc).getTotalWordCount();
-	        		  tfidf = tf/totalcount * idf;
-//	        		  System.out.println(doc+" word: "+ word+" "+tfidf);
-	        		  scoreMap.put(tfidf, doc);
-	        		  
-	        		  
+	        	  for(Entry<String, Integer> entry2 : iw.getDocument().entrySet()){
+	        		  String doc = entry2.getKey();
+	        		  double tf = entry2.getValue().doubleValue();
+	        		  UrlLink docLink = UrlLink.getAllLinks().get(doc);
+	        		  int totalcount = docLink.getTotalWordCount();
+	        		  double tfidf = tf/totalcount * idf;
+	        		  double finalRank = tfidf*tfidfRatio + docLink.getPageRank()*pageRankRatio; 
+	        		  scoreMap.put(finalRank, doc);
 	        	  }
 	        	  DataSort sortData = new DataSort(word,scoreMap);
 	        	  sortData.Sort();
@@ -67,11 +77,7 @@ public class Indexing {
 	        	  
 	        	  
 	          }
-	          
-	          
-	          
-	          
-	          
+
 	          /*
 	          for(String word : Indexer.getALlTerms().keySet()) {
 	        	  System.out.println(word);
@@ -83,4 +89,5 @@ public class Indexing {
 	          e.printStackTrace();
 	       }		   
 	}
+	
 }
