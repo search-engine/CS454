@@ -1,9 +1,13 @@
 package Index;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -37,16 +41,36 @@ public class Indexing {
 	          int totalcount;
 	          double idf, tfidf;
 	          double tf;
+	           
+	          
 	          for(String word : Indexer.getALlTerms().keySet()){
+	        	  TreeMap<Double, String> scoreTree = new TreeMap<Double, String>();
 	        	  iw = Indexer.getALlTerms().get(word);
 	        	  idf = iw.getIDF(UrlLink.getAllLinks().size());
+	        	  List<Double> tfIdfList = new ArrayList<Double>();
+	        	  List<String> docList = new ArrayList<String>();
+	        	  
+	        	  Map<Double, String> scoreMap = new HashMap<Double, String>();
+	        	  
 	        	  for(String doc : iw.getDocument().keySet()){
 	        		  tf = iw.getDocument().get(doc).doubleValue();
 	        		  totalcount = UrlLink.getAllLinks().get(doc).getTotalWordCount();
 	        		  tfidf = tf/totalcount * idf;
-	        		  System.out.println(doc+" word: "+ word+" "+tfidf);
+//	        		  System.out.println(doc+" word: "+ word+" "+tfidf);
+	        		  scoreMap.put(tfidf, doc);
+	        		  
+	        		  
 	        	  }
+	        	  DataSort sortData = new DataSort(word,scoreMap);
+	        	  sortData.Sort();
+	        	  sortData.displayTree();
+	        	  
+	        	  
 	          }
+	          
+	          
+	          
+	          
 	          
 	          /*
 	          for(String word : Indexer.getALlTerms().keySet()) {

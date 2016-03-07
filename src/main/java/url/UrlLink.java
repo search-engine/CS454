@@ -10,13 +10,14 @@ public class UrlLink {
 	private Set<UrlLink> linkTo;
 	private int totalWordCount = 0;
 	private static HashMap<String, UrlLink> urllinks = new HashMap<String, UrlLink>();
+	private double pageRank;
 	
 	public UrlLink(String url){
 		this.url = url;
 		linkFrom = new HashSet<UrlLink>();
 		linkTo = new HashSet<UrlLink>();
 		setTotalWordCount(0);
-		
+		setPageRank(0);
 	}
 
 	public String getUrl() {
@@ -63,4 +64,13 @@ public class UrlLink {
 	public void setTotalWordCount(int totalWordCount) {
 		this.totalWordCount = totalWordCount;
 	}
+
+	public double getPageRank() {
+		return pageRank;
+	}
+
+	public void setPageRank(double pageRank) {
+		this.pageRank = pageRank;
+	}
+	
 }
