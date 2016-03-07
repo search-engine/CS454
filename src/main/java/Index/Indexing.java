@@ -1,10 +1,8 @@
 package Index;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -14,8 +12,9 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import url.UrlLink;
 
 public class Indexing {
+	private static final double tfidfRatio = 0.85;
+	private static final double pageRankRatio = 0.15;
 	public static void main( String args[] ) {
-
 		File f = null;
 	      try{     
 	          // create new file
@@ -55,11 +54,6 @@ public class Indexing {
 		          }
 	          }
 	          
-	          for (Entry<String, UrlLink> entry : UrlLink.getAllLinks().entrySet()) {
-	              System.out.println(entry.getKey()+" "+entry.getValue().getPageRank());
-	          }
-	          
-	          /*
 	          for(Entry<String, IndexWords> entry : Indexer.getALlTerms().entrySet()){
 	        	  String word = entry.getKey();
 	        	  IndexWords iw = entry.getValue();
@@ -67,9 +61,11 @@ public class Indexing {
 	        	  for(Entry<String, Integer> entry2 : iw.getDocument().entrySet()){
 	        		  String doc = entry2.getKey();
 	        		  double tf = entry2.getValue().doubleValue();
-	        		  int totalcount = UrlLink.getAllLinks().get(doc).getTotalWordCount();
+	        		  UrlLink docLink = UrlLink.getAllLinks().get(doc);
+	        		  int totalcount = docLink.getTotalWordCount();
 	        		  double tfidf = tf/totalcount * idf;
-	        		  System.out.println(doc+" word: "+ word+" "+tfidf);
+	        		  double finalRank = tfidf*tfidfRatio + docLink.getPageRank()*pageRankRatio; 
+	        		  System.out.println(doc+" word: "+ word+" "+finalRank);
 	        	  }
 	          }
 	          
