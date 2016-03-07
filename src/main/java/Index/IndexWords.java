@@ -23,5 +23,8 @@ public class IndexWords {
 			document.put(url, 1);
 		}
 	}
-
+	
+	public double getIDF(int t){
+		return Math.log(((double) t)/document.size()); 
+	}
 }

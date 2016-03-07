@@ -8,28 +8,46 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
+import url.UrlLink;
+
 public class Indexing {
 	public static void main( String args[] ) {
 
 		File f = null;
 	      try{     
 	          // create new file
-	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/0/");
+	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/");
 	          //Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
 	          List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 	          Set<String> filepath = new HashSet<String>();
 	          for(File file: files){
-	        	  filepath.add(file.getCanonicalPath());
+	        	  String path = file.getCanonicalPath();
+	        	  if(filepath.add(path)){
+	        		  UrlLink.addLink(path);
+	        	  }
 	          }
 	          
 	          // for each pathname in pathname array
-	          for(String file: filepath)
-	          {
+	          for(String file: filepath){
 	             // prints file and directory paths
 	        	 Indexer.indexer(file, filepath);
-	        	 
 	             //System.out.println(file.getCanonicalPath());
 	          }
+	          IndexWords iw;
+	          int totalcount;
+	          double idf, tfidf;
+	          double tf;
+	          for(String word : Indexer.getALlTerms().keySet()){
+	        	  iw = Indexer.getALlTerms().get(word);
+	        	  idf = iw.getIDF(UrlLink.getAllLinks().size());
+	        	  for(String doc : iw.getDocument().keySet()){
+	        		  tf = iw.getDocument().get(doc).doubleValue();
+	        		  totalcount = UrlLink.getAllLinks().get(doc).getTotalWordCount();
+	        		  tfidf = tf/totalcount * idf;
+	        		  System.out.println(doc+" word: "+ word+" "+tfidf);
+	        	  }
+	          }
+	          
 	          /*
 	          for(String word : Indexer.getALlTerms().keySet()) {
 	        	  System.out.println(word);

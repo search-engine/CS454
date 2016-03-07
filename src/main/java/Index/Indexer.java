@@ -23,6 +23,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.xml.sax.ContentHandler;
 
+import url.UrlLink;
+
 public class Indexer {
 	
 	private static HashMap<String, IndexWords> index = new HashMap<String, IndexWords>();
@@ -185,6 +187,7 @@ public class Indexer {
 			
 			String plainText = document.text();
 			String[] infoArr = plainText.split("\\s+");
+			int totalwords = 0;
 			
 	        for(String s : infoArr) {
 	        	s = s.replaceAll("[^a-zA-Z]", "").toLowerCase();
@@ -197,8 +200,10 @@ public class Indexer {
         				index.put(s, word);
         			}
 	        		word.setDocument(url);
+	        		totalwords++;
 	        	}
-	        }	
+	        }
+	        UrlLink.getAllLinks().get(url).setTotalWordCount(totalwords);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -8,12 +8,14 @@ public class UrlLink {
 	private String url;
 	private Set<UrlLink> linkFrom;
 	private Set<UrlLink> linkTo;
+	private int totalWordCount = 0;
 	private static HashMap<String, UrlLink> urllinks = new HashMap<String, UrlLink>();
 	
 	public UrlLink(String url){
 		this.url = url;
 		linkFrom = new HashSet<UrlLink>();
 		linkTo = new HashSet<UrlLink>();
+		setTotalWordCount(0);
 		
 	}
 
@@ -48,5 +50,13 @@ public class UrlLink {
 	
 	public static HashMap<String, UrlLink> getAllLinks(){
 		return urllinks;
+	}
+
+	public int getTotalWordCount() {
+		return totalWordCount;
+	}
+
+	public void setTotalWordCount(int totalWordCount) {
+		this.totalWordCount = totalWordCount;
 	}
 }
