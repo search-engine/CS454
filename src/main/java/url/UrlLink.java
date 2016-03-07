@@ -23,6 +23,10 @@ public class UrlLink {
 		return url;
 	}
 	
+	public void addLinkTo(String urlFrom){
+		this.addLinkTo(urllinks.get(urlFrom));
+	}
+	
 	public void addLinkTo(UrlLink urlFrom){
 		linkTo.add(urlFrom);
 		urlFrom.addLinkFrom(this);

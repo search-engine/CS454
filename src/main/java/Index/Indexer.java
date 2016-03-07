@@ -114,7 +114,7 @@ public class Indexer {
 			"yourselves", "zero" };	
 	
 	
-	public static void indexer(String url, Set<String> filepath){
+	public static void indexer(String url){
 		
 		for(String stopword : stopwords) {
 			stopwordset.add(stopword);
@@ -168,6 +168,7 @@ public class Indexer {
 			Document document = Jsoup.parse(new File(url),"UTF-8");
 			Set<String> linkSet = new HashSet<String>();
 			Elements links = document.select("a[href]");
+			UrlLink link = UrlLink.getAllLinks().get(url);
 			for(Element element: links){
 				//System.out.println(element.baseUri());
 				//System.out.println(element.);
@@ -178,8 +179,8 @@ public class Indexer {
 					continue;
 				}
 				String u = getRealPath(url, href);
-				if(filepath.contains(u)){
-					System.out.println(u);
+				if(UrlLink.getAllLinks().containsKey(u)){
+					link.addLinkTo(u);
 				}
 				
 				

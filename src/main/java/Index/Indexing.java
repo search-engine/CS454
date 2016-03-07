@@ -28,9 +28,9 @@ public class Indexing {
 	          }
 	          
 	          // for each pathname in pathname array
-	          for(String file: filepath){
+	          for(String link: UrlLink.getAllLinks().keySet()){
 	             // prints file and directory paths
-	        	 Indexer.indexer(file, filepath);
+	        	 Indexer.indexer(link);
 	             //System.out.println(file.getCanonicalPath());
 	          }
 	          IndexWords iw;
