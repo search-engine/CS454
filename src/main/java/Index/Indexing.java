@@ -8,20 +8,43 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+
+import com.google.gson.Gson;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.MongoClient;
 
 import url.UrlLink;
 
 public class Indexing {
 	private static final double tfidfRatio = 0.85;
 	private static final double pageRankRatio = 0.15;
+	
 	public static void main( String args[] ) {
 		File f = null;
 	      try{     
+	    	  
+	    	  // To connect to mongodb server
+		         MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
+					
+		         // Now connect to your databases
+		         DB db = mongoClient.getDB( "search_engine" );
+	    
+					
+		         DBCollection coll = db.getCollection("index");
+					
+		         DBCursor cursor = coll.find();
+		         	
+		         while (cursor.hasNext()) { 
+		        	 coll.remove(cursor.next());
+		         }
+		         
 	          // create new file
-	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/");
+	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/(/");
 	          //Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
 	          List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 	          Set<String> filepath = new HashSet<String>();
@@ -56,7 +79,8 @@ public class Indexing {
 		              refined = entry.getValue().confirmRank(0.01) && refined;
 		          }
 	          }
-	          
+	          Gson gson = new Gson();
+	          BasicDBObject documentDetail = new BasicDBObject();
 	          for(Entry<String, IndexWords> entry : Indexer.getALlTerms().entrySet()){
 	        	  String word = entry.getKey();
 	        	  IndexWords iw = entry.getValue();
@@ -73,11 +97,14 @@ public class Indexing {
 	        	  }
 	        	  DataSort sortData = new DataSort(word,scoreMap);
 	        	  sortData.Sort();
-	        	  sortData.displayTree();
+	        	  //sortData.displayTree();
+	        	  String toJson = gson.toJson(sortData.getScoreTree()); 
 	        	  
-	        	  
+	        	  documentDetail.put(word, toJson);
+	 	          
+	        	  //System.out.println(toJson);
 	          }
-
+	          coll.insert(documentDetail);
 	          /*
 	          for(String word : Indexer.getALlTerms().keySet()) {
 	        	  System.out.println(word);
@@ -88,6 +115,5 @@ public class Indexing {
 	          // if any error occurs
 	          e.printStackTrace();
 	       }		   
-	}
-	
+	}	
 }

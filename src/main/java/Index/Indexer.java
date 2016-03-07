@@ -200,15 +200,15 @@ public class Indexer {
 	}
 	
 	private static String getRealPath(String url, String uri) {
-		//System.out.println(url);
+		System.out.println(url);
 		if(url.charAt(url.length()-1) == '\\'){
 			url = url.substring(0, url.length()-1);
 		}
-		url = url.substring(0, url.lastIndexOf('\\'));
+		//url = url.substring(0, url.lastIndexOf('\\'));
 		//System.out.println(url);
 		while(uri.substring(0, 3).equals("../")){
 			uri = uri.substring(3);
-			url = url.substring(0, url.lastIndexOf('\\'));
+			//url = url.substring(0, url.lastIndexOf('\\'));
 		}
 		return url+uri.replace('/', '\\');
 	}
