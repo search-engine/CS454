@@ -10,6 +10,8 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
@@ -44,7 +46,7 @@ public class Indexing {
 		         }
 		         
 	          // create new file
-	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/(/");
+	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/1/");
 	          //Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
 	          List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 	          Set<String> filepath = new HashSet<String>();
@@ -98,9 +100,14 @@ public class Indexing {
 	        	  DataSort sortData = new DataSort(word,scoreMap);
 	        	  sortData.Sort();
 	        	  //sortData.displayTree();
-	        	  String toJson = gson.toJson(sortData.getScoreTree()); 
-	        	  
-	        	  documentDetail.put(word, toJson);
+	        	  //String toJson = gson.toJson(sortData.getScoreTree()); 
+	        	  JSONArray jsonArray = new JSONArray();
+	        	  for(Entry<Double, String> data : sortData.getScoreTree().entrySet()){
+	        		  JSONObject obj = new JSONObject();
+	        		  obj.put(data.getValue(), data.getKey().doubleValue());
+	        		  jsonArray.add(obj);
+	        	  }
+	        	  documentDetail.put(word, jsonArray);
 	 	          
 	        	  //System.out.println(toJson);
 	          }
