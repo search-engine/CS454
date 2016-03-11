@@ -30,7 +30,7 @@ public class Indexing {
 	    	  
 	    	  // To connect to mongodb server
 		         MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
-					
+
 		         // Now connect to your databases
 		         DB db = mongoClient.getDB( "search_engine" );
 	    
