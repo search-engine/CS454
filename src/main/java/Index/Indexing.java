@@ -104,14 +104,15 @@ public class Indexing {
 	        	  JSONArray jsonArray = new JSONArray();
 	        	  for(Entry<Double, String> data : sortData.getScoreTree().entrySet()){
 	        		  JSONObject obj = new JSONObject();
-	        		  obj.put(data.getValue(), data.getKey().doubleValue());
+	        		  obj.put("url", data.getValue());
+	        		  obj.put("score", data.getKey().doubleValue());
 	        		  jsonArray.add(obj);
 	        	  }
-	        	  documentDetail.put(word, jsonArray);
-	 	          
+	        	  documentDetail.put("word", word);
+	        	  documentDetail.put("ranks", jsonArray);
+	        	  coll.insert(documentDetail);
 	        	  //System.out.println(toJson);
 	          }
-	          coll.insert(documentDetail);
 	          /*
 	          for(String word : Indexer.getALlTerms().keySet()) {
 	        	  System.out.println(word);
