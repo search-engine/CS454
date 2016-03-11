@@ -46,7 +46,7 @@ public class Indexing {
 		         }
 		         
 	          // create new file
-	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/1/");
+	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/");
 	          //Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
 	          List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 	          Set<String> filepath = new HashSet<String>();
@@ -82,8 +82,9 @@ public class Indexing {
 		          }
 	          }
 	          Gson gson = new Gson();
-	          BasicDBObject documentDetail = new BasicDBObject();
+	          
 	          for(Entry<String, IndexWords> entry : Indexer.getALlTerms().entrySet()){
+	        	  BasicDBObject documentDetail = new BasicDBObject();
 	        	  String word = entry.getKey();
 	        	  IndexWords iw = entry.getValue();
 	        	  double idf = iw.getIDF(UrlLink.getAllLinks().size());
