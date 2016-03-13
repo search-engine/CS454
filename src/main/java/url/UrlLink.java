@@ -16,10 +16,11 @@ public class UrlLink {
 	private final double oneMinusLamda = 1 - lamda;
 	private double lamdaOverN;
 	private String path;
+	private String base = System.getProperty("user.dir") + "/url/";
 	
 	public UrlLink(String url){
 		this.url = url;
-		this.path = getPath(url);
+		this.path = base + getPath(url);
 		linkFrom = new HashSet<UrlLink>();
 		linkTo = new HashSet<UrlLink>();
 		setTotalWordCount(0);

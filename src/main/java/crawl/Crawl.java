@@ -35,7 +35,7 @@ public class Crawl implements Callable<Set<String>>{
 	public Set<String> call() throws Exception {
 		Set<String> linkSet = new HashSet<String>();
 		try {
-			String path = base + link.getPath();
+			String path = link.getPath();
 			//System.out.println(link + " path---> " + path);
 			File file = new File(path);
 			if(!file.exists()){if(file.mkdirs()){/*System.out.println("path created "+path);*/}}
