@@ -77,11 +77,13 @@ public class Crawler {
 					Set<String> sets = futureSet.get();
 					for(String u : sets){
 						UrlLink newlink = null;
+						//System.out.println(depth);
 						if(depth > 0){
 							newlink = UrlLink.addLink(u);
 						}
 						if(newlink != null){
 							urlToLink.addLinkTo(newlink);
+							urlQueue.add(newlink);
 						}else if(UrlLink.getAllLinks().containsKey(u)){
 							urlToLink.addLinkTo(UrlLink.getAllLinks().get(u));
 						}
@@ -100,7 +102,7 @@ public class Crawler {
 			System.out.println(entry.getValue().getUrl()+" in "+entry.getValue().linkFromSize()+ " out "+entry.getValue().linkToSize());			
 		}
 		System.out.println("starting indexing and ranking now");
-		Indexing.indexingAndRanking();
+		//Indexing.indexingAndRanking();
 	 }
 	
 }

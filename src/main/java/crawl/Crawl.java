@@ -39,6 +39,7 @@ public class Crawl implements Callable<Set<String>>{
 			//System.out.println(link + " path---> " + path);
 			File file = new File(path);
 			if(!file.exists()){if(file.mkdirs()){/*System.out.println("path created "+path);*/}}
+			
 			Document doc = Jsoup.connect(link.getUrl()).ignoreContentType(true).userAgent("Mozilla").get();
 			Elements links = doc.select("a[href]");
 			for(Element link : links){	
@@ -49,6 +50,7 @@ public class Crawl implements Callable<Set<String>>{
 						
 				}
 			}
+			
 			byte[] bytes = Jsoup.connect(link.getUrl()).maxBodySize(0).ignoreContentType(true).execute().bodyAsBytes();
 			Response response = Jsoup.connect(link.getUrl()).ignoreContentType(true).execute();
 			String contentType = response.contentType();
@@ -107,6 +109,7 @@ public class Crawl implements Callable<Set<String>>{
 		} catch (IOException e) {
 			e.printStackTrace();
 			link.removeFromUrlLink();
+			//UrlLink.getAllLinks().remove(link.getUrl());
 		}
 		return linkSet;
 	}
