@@ -17,6 +17,7 @@ public class UrlLink {
 	private double lamdaOverN;
 	private String path;
 	private String base = System.getProperty("user.dir") + "/url/";
+	private String longPath;
 	
 	public UrlLink(String url){
 		this.url = url;
@@ -141,4 +142,28 @@ public class UrlLink {
 		return u;
 	}
 
+	public String getLongPath() {
+		return longPath;
+	}
+
+	public void setLongPath(String fname) {
+		this.longPath = this.path + fname;
+	}
+	
+	public static String getFname(String url2, Boolean isHTML) {
+		url2 = url2.substring(url2.indexOf("//")+2);
+		int lastSlash = url2.lastIndexOf('/');
+		if(lastSlash != -1){
+			url2 = url2.substring(lastSlash + 1); 
+		}
+		if(isHTML){
+			if(url2.contains(".html")||url2.contains(".htm")){
+				return url2;
+			}else{
+				return url2 + ".html";
+			}
+		}
+		return url2;
+	}
+	
 }

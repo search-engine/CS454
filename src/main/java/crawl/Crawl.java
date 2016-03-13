@@ -55,7 +55,8 @@ public class Crawl implements Callable<Set<String>>{
 			Response response = Jsoup.connect(link.getUrl()).ignoreContentType(true).execute();
 			String contentType = response.contentType();
 			Boolean isHTML = contentType.contains("text/html");
-			String fname = getFname(link.getUrl(), isHTML);
+			String fname = UrlLink.getFname(link.getUrl(), isHTML);
+			link.setLongPath(fname);
 			//System.out.println(link+" is downloaded");
 			FileOutputStream fos = new FileOutputStream(path+fname);
 			fos.write(bytes);
@@ -110,20 +111,5 @@ public class Crawl implements Callable<Set<String>>{
 		}
 		return linkSet;
 	}
-
-	private String getFname(String url2, Boolean isHTML) {
-		url2 = url2.substring(url2.indexOf("//")+2);
-		int lastSlash = url2.lastIndexOf('/');
-		if(lastSlash != -1){
-			url2 = url2.substring(lastSlash + 1); 
-		}
-		if(isHTML){
-			if(url2.contains(".html")||url2.contains(".htm")){
-				return url2;
-			}else{
-				return url2 + ".html";
-			}
-		}
-		return url2;
-	}						
+						
 }
