@@ -98,9 +98,9 @@ public class Crawler {
 			while(!executor.isTerminated()){}
 			depth--;
 		}
-		for(Entry<String, UrlLink> entry: UrlLink.getAllLinks().entrySet()){
-			System.out.println(entry.getValue().getUrl()+" in "+entry.getValue().linkFromSize()+ " out "+entry.getValue().linkToSize());			
-		}
+//		for(Entry<String, UrlLink> entry: UrlLink.getAllLinks().entrySet()){
+//			System.out.println(entry.getValue().getUrl()+" in "+entry.getValue().linkFromSize()+ " out "+entry.getValue().linkToSize());			
+//		}
 		System.out.println("starting indexing and ranking now");
 		Indexing.indexingAndRanking();
 	 }
