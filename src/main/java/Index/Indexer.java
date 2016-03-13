@@ -152,7 +152,7 @@ public class Indexer {
 //		}catch(Exception e) {}
 		
 		try {
-			Document document = Jsoup.parse(new File(urlLink.getPath()),"UTF-8");
+			Document document = Jsoup.parse(new File(urlLink.getLongPath()),"UTF-8");
 			String plainText = document.text();
 			String[] infoArr = plainText.split("\\s+");
 			int totalwords = 0;
