@@ -67,7 +67,7 @@ public class Crawler {
 	        
 	        while(!urlQueue2.isEmpty()){
 	        	UrlLink urlLink2Crawl = urlQueue2.poll();
-	        	Crawl crawler = new Crawl(urlLink2Crawl);
+	        	Crawl crawler = new Crawl(urlLink2Crawl, depth);
 	        	Future<Set<String>> resultSet = executor.submit(crawler);
 	        	resultList.put(urlLink2Crawl, resultSet);
 	        }
@@ -76,11 +76,8 @@ public class Crawler {
 				try {
 					Set<String> sets = futureSet.get();
 					for(String u : sets){
-						UrlLink newlink = null;
-						//System.out.println(depth);
-						if(depth > 0){
-							newlink = UrlLink.addLink(u);
-						}
+						UrlLink newlink = UrlLink.addLink(u);
+			
 						if(newlink != null){
 							urlToLink.addLinkTo(newlink);
 							urlQueue.add(newlink);

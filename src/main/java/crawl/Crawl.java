@@ -22,14 +22,14 @@ import url.UrlLink;
 
 public class Crawl implements Callable<Set<String>>{
 	private UrlLink link;
-	//private int depth;
+	private int depth;
 	private String base = System.getProperty("user.dir") + "/url/";
     private static Set<String> images = new HashSet<String>();
 	
-	public Crawl(UrlLink urlLink2Crawl) {
+	public Crawl(UrlLink urlLink2Crawl, int depth) {
 		this.link = urlLink2Crawl;
 		//System.out.println("url to crawl" + urlLink2Crawl.getUrl());
-		//this.depth = depth;
+		this.depth = depth;
 	}
 
 	public Set<String> call() throws Exception {
@@ -39,18 +39,18 @@ public class Crawl implements Callable<Set<String>>{
 			//System.out.println(link + " path---> " + path);
 			File file = new File(path);
 			if(!file.exists()){if(file.mkdirs()){/*System.out.println("path created "+path);*/}}
-			
 			Document doc = Jsoup.connect(link.getUrl()).ignoreContentType(true).userAgent("Mozilla").get();
-			Elements links = doc.select("a[href]");
-			for(Element link : links){	
-				try {
-					Response res = Jsoup.connect(link.attr("abs:href")).execute();
-					linkSet.add(UrlLink.urlTrim(res.url().toString()));
-				}catch(Exception e) {
+			if(depth > 0){
+				Elements links = doc.select("a[href]");
+				for(Element link : links){	
+					try {
+						Response res = Jsoup.connect(link.attr("abs:href")).execute();
+						linkSet.add(UrlLink.urlTrim(res.url().toString()));
+					}catch(Exception e) {
 						
+					}
 				}
 			}
-			
 			byte[] bytes = Jsoup.connect(link.getUrl()).maxBodySize(0).ignoreContentType(true).execute().bodyAsBytes();
 			Response response = Jsoup.connect(link.getUrl()).ignoreContentType(true).execute();
 			String contentType = response.contentType();
@@ -109,7 +109,6 @@ public class Crawl implements Callable<Set<String>>{
 		} catch (IOException e) {
 			e.printStackTrace();
 			link.removeFromUrlLink();
-			//UrlLink.getAllLinks().remove(link.getUrl());
 		}
 		return linkSet;
 	}
