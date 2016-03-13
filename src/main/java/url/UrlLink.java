@@ -26,7 +26,14 @@ public class UrlLink {
 		linkTo = new HashSet<UrlLink>();
 		setTotalWordCount(0);
 	}
-
+	
+	public void removeFrom(UrlLink urllink){
+		linkFrom.remove(urllink);
+	}	
+	public void removeTo(UrlLink urllink){
+		linkTo.remove(urllink);
+	}
+	
 	public String getUrl() {
 		return url;
 	}
@@ -164,6 +171,16 @@ public class UrlLink {
 			}
 		}
 		return url2;
+	}
+
+	public void removeFromUrlLink() {
+		for(UrlLink formLink: linkFrom){
+			formLink.removeTo(this);
+		}
+		for(UrlLink formLink: linkTo){
+			formLink.removeFrom(this);
+		}
+		urllinks.remove(this);
 	}
 	
 }
