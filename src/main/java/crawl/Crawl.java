@@ -108,6 +108,7 @@ public class Crawl implements Callable<Set<String>>{
 			}*/
 		} catch (IOException e) {
 			e.printStackTrace();
+			UrlLink.getAllLinks().remove(link);
 		}
 		return linkSet;
 	}
