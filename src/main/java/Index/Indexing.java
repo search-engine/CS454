@@ -26,7 +26,7 @@ public class Indexing {
 	private static final double tfidfRatio = 0.85;
 	private static final double pageRankRatio = 0.15;
 	
-	public static void main( String args[] ) {
+	public static void indexingAndRanking() {
 		File f = null;
 	      try{     
 	    	  
@@ -46,9 +46,10 @@ public class Indexing {
 		         }
 		         
 	          // create new file
-	          f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/");
+	          //f = new File(System.getProperty("user.home")+"/extra/wiki-small/en/articles/");
 	          //Indexer.indexer("/Users/anandsuresh/Desktop/100th_Anniversary_deb0.html");
-	          List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+	          /*
+		      List<File> files = (List<File>) FileUtils.listFiles(f, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 	          Set<String> filepath = new HashSet<String>();
 	          for(File file: files){
 	        	  String path = file.getCanonicalPath();
@@ -56,11 +57,16 @@ public class Indexing {
 	        		  UrlLink.addLink(path);
 	        	  }
 	          }
-	          
+	          */
 	          // for each pathname in pathname array
-	          for(String link: UrlLink.getAllLinks().keySet()){
+	          for(Entry<String, UrlLink> en: UrlLink.getAllLinks().entrySet()){
 	             // prints file and directory paths
-	        	 Indexer.indexer(link);
+	        	 try{
+	        		 Indexer.indexer(en.getValue());
+	        	 }catch(Exception e){
+	        		 System.out.println("cannot index " + en.getKey());
+	        		 e.printStackTrace();
+	        	 }
 	             //System.out.println(file.getCanonicalPath());
 	          }
 
@@ -81,7 +87,6 @@ public class Indexing {
 		              refined = entry.getValue().confirmRank(0.01) && refined;
 		          }
 	          }
-	          Gson gson = new Gson();
 	          
 	          for(Entry<String, IndexWords> entry : Indexer.getALlTerms().entrySet()){
 	        	  BasicDBObject documentDetail = new BasicDBObject();

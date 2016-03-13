@@ -101,7 +101,7 @@ public class Indexer {
 			"yourselves", "zero" };	
 	
 	
-	public static void indexer(String url){
+	public static void indexer(UrlLink urlLink){
 		
 		for(String stopword : stopwords) {
 			stopwordset.add(stopword);
@@ -152,26 +152,7 @@ public class Indexer {
 //		}catch(Exception e) {}
 		
 		try {
-			Document document = Jsoup.parse(new File(url),"UTF-8");
-			Elements links = document.select("a[href]");
-			UrlLink link = UrlLink.getAllLinks().get(url);
-			for(Element element: links){
-				//System.out.println(element.baseUri());
-				//System.out.println(element.);
-				String href = element.attr("href");
-				
-				
-				if(href == null || href != null &&(href.length() == 0 || href.startsWith("#") || href.contains("http://")||href.contains("https://"))){
-					continue;
-				}
-				String u = getRealPath(url, href);
-				if(UrlLink.getAllLinks().containsKey(u)){
-					link.addLinkTo(u);
-				}
-				
-				
-			}
-			
+			Document document = Jsoup.parse(new File(urlLink.getPath()),"UTF-8");
 			String plainText = document.text();
 			String[] infoArr = plainText.split("\\s+");
 			int totalwords = 0;
@@ -186,29 +167,16 @@ public class Indexer {
         				word = new IndexWords();
         				index.put(s, word);
         			}
-	        		word.setDocument(url);
+	        		word.setDocument(urlLink.getUrl());
 	        		totalwords++;
 	        	}
 	        }
-	        UrlLink.getAllLinks().get(url).setTotalWordCount(totalwords);
+	        urlLink.setTotalWordCount(totalwords);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static String getRealPath(String url, String uri) {
-		if(url.charAt(url.length()-1) == '\\'){
-			url = url.substring(0, url.length()-1);
-		}
-		url = url.substring(0, url.lastIndexOf('\\'));
-		//System.out.println(url);
-		while(uri.substring(0, 3).equals("../")){
-			uri = uri.substring(3);
-			url = url.substring(0, url.lastIndexOf('\\'));
-		}
-		return url+uri.replace('/', '\\');
-	}
-
 	public static HashMap<String, IndexWords> getALlTerms(){
 		return index;
 	}

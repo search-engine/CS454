@@ -2,8 +2,8 @@ package crawl;
 
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -11,13 +11,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import url.UrlLink;
+
 
 public class Crawler {
 	private static String url;
 	private static int depth = -1;
 	private static boolean isExtraction = false;
-	private static Set<String> urlSet = new HashSet<String>();
-	private static Queue<String> urlQueue = new LinkedList<String>();
+	private static Queue<UrlLink> urlQueue = new LinkedList<UrlLink>();
  	public static void main(String[] args) {
 		int index = 0;
  		while(index < args.length){
@@ -53,31 +54,32 @@ public class Crawler {
 		}
 		
 		System.out.println("Depth is "+depth+"; URL is "+url+"; isExtraction: "+isExtraction);
-		url = urlTrim(url);
-		addURL(url);		
+		url = UrlLink.urlTrim(url);	
+		urlQueue.add(UrlLink.addLink(url));
 		while(depth >= 0){
-			Queue<String> urlQueue2 = new LinkedList<String>();
+			Queue<UrlLink> urlQueue2 = new LinkedList<UrlLink>();
 			while(!urlQueue.isEmpty()){
 				urlQueue2.add(urlQueue.poll());
 			}
 	        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
-	        HashMap<String, Future<Set<String>>> resultList = new HashMap<String, Future<Set<String>>>();
+	        HashMap<UrlLink, Future<Set<String>>> resultList = new HashMap<UrlLink, Future<Set<String>>>();
 	        
 	        while(!urlQueue2.isEmpty()){
-	        	String link2Crawl = urlQueue2.poll();
-	        	Crawl crawler = new Crawl(link2Crawl, depth);
+	        	UrlLink urlLink2Crawl = urlQueue2.poll();
+	        	Crawl crawler = new Crawl(urlLink2Crawl, depth);
 	        	Future<Set<String>> resultSet = executor.submit(crawler);
-	        	resultList.put(link2Crawl, resultSet);
+	        	resultList.put(urlLink2Crawl, resultSet);
 	        }
-			for(String urlToLink : resultList.keySet()){
+			for(UrlLink urlToLink : resultList.keySet()){
 				Future<Set<String>> futureSet = resultList.get(urlToLink);
 				try {
 					Set<String> sets = futureSet.get();
 					for(String u : sets){
-						System.out.println("found " + u);
-						u = urlTrim(u);
-						System.out.println("found trimed: " + u);
-						addURL(u);
+						UrlLink newlink = UrlLink.addLink(u);
+						if(newlink != null){
+							urlQueue.add(newlink);
+							urlToLink.addLinkTo(newlink);
+						}
 					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -89,38 +91,13 @@ public class Crawler {
 			while(!executor.isTerminated()){}
 			depth--;
 		}
-			
-	   }
-
-
-	private static boolean addURL(String u) {
-		if(u == null || !(u.contains("https://")||u.contains("http://"))){
-			return false;
-		}else if(urlSet.add(u)){
-			return urlQueue.add(u);
-		}else{
-			return false;
+		for(Entry<String, UrlLink> entry: UrlLink.getAllLinks().entrySet()){
+			System.out.println(entry.getValue().getUrl()+" in "+entry.getValue().linkFromSize()+ " out "+entry.getValue().linkToSize());
 		}
-	}
+		
+		
+	 }
 	
-	private static String urlTrim(String u){
-		if(u.contains("?")){
-			u = u.substring(0, u.indexOf("?"));
-		}
-		//remove after ;
-		if(u.contains(";")){
-			u = u.substring(0, u.indexOf(";"));
-		}
-		//
-		if(u.contains("#")){
-			u = u.substring(0, u.indexOf("#"));
-		}
-		//if last one is /, then remove it
-		if(u.charAt(u.length() - 1) == '/'){
-			u = u.substring(0, u.length() - 1);
-		}
-		return u;
-	}
 }
 
 

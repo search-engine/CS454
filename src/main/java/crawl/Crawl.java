@@ -17,43 +17,46 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import url.UrlLink;
+
 
 public class Crawl implements Callable<Set<String>>{
-	private String link;
+	private UrlLink link;
 	private int depth;
 	private String base = System.getProperty("user.dir") + "/url/";
     private static Set<String> images = new HashSet<String>();
 	
-	public Crawl(String link, int depth) {
-		this.link = link;
+	public Crawl(UrlLink urlLink2Crawl, int depth) {
+		this.link = urlLink2Crawl;
+		//System.out.println("url to crawl" + urlLink2Crawl.getUrl());
 		this.depth = depth;
 	}
 
 	public Set<String> call() throws Exception {
 		Set<String> linkSet = new HashSet<String>();
 		try {
-			String path = base + getPath(link);
-			System.out.println(link + " path---> " + path);
+			String path = base + link.getPath();
+			//System.out.println(link + " path---> " + path);
 			File file = new File(path);
-			if(!file.exists()){if(file.mkdirs()){System.out.println("path created "+path);}}
-			Document doc = Jsoup.connect(link).ignoreContentType(true).userAgent("Mozilla").get();
+			if(!file.exists()){if(file.mkdirs()){/*System.out.println("path created "+path);*/}}
+			Document doc = Jsoup.connect(link.getUrl()).ignoreContentType(true).userAgent("Mozilla").get();
 			if(depth > 0){
 				Elements links = doc.select("a[href]");
 				for(Element link : links){	
 					try {
 						Response res = Jsoup.connect(link.attr("abs:href")).execute();
-						linkSet.add(res.url().toString());
+						linkSet.add(UrlLink.urlTrim(res.url().toString()));
 					}catch(Exception e) {
 						
 					}
 				}
 			}
-			byte[] bytes = Jsoup.connect(link).maxBodySize(0).ignoreContentType(true).execute().bodyAsBytes();
-			Response response = Jsoup.connect(link).ignoreContentType(true).execute();
+			byte[] bytes = Jsoup.connect(link.getUrl()).maxBodySize(0).ignoreContentType(true).execute().bodyAsBytes();
+			Response response = Jsoup.connect(link.getUrl()).ignoreContentType(true).execute();
 			String contentType = response.contentType();
 			Boolean isHTML = contentType.contains("text/html");
-			String fname = getFname(link, isHTML);
-			System.out.println(link+" is downloaded");
+			String fname = getFname(link.getUrl(), isHTML);
+			//System.out.println(link+" is downloaded");
 			FileOutputStream fos = new FileOutputStream(path+fname);
 			fos.write(bytes);
 			fos.close();
@@ -106,21 +109,6 @@ public class Crawl implements Callable<Set<String>>{
 			e.printStackTrace();
 		}
 		return linkSet;
-	}
-
-	private String getPath(String url2) {
-		//remove https:// or http://
-		url2 = url2.substring(url2.indexOf("//")+2);
-		//System.out.println("url2: "+url2);
-		int lastSlash = url2.lastIndexOf('/');
-		//System.out.println(lastSlash);
-		if(lastSlash != -1){
-			//System.out.println("url2 substr 1:"+url2.substring(0, lastSlash + 1));
-			return url2.substring(0, lastSlash + 1);
-		}else{
-			//System.out.println("url2 substr 2:"+url2 + "/");
-			return url2 + "/";
-		}
 	}
 
 	private String getFname(String url2, Boolean isHTML) {

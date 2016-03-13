@@ -15,9 +15,11 @@ public class UrlLink {
 	private static final double lamda = 0.15;
 	private final double oneMinusLamda = 1 - lamda;
 	private double lamdaOverN;
+	private String path;
 	
 	public UrlLink(String url){
 		this.url = url;
+		this.path = getPath(url);
 		linkFrom = new HashSet<UrlLink>();
 		linkTo = new HashSet<UrlLink>();
 		setTotalWordCount(0);
@@ -48,11 +50,15 @@ public class UrlLink {
 		return this.linkTo.size();
 	}
 	
-	public static boolean addLink(String u){
-		if(urllinks.containsKey(u)){
-			return false;
+	public static UrlLink addLink(String u){
+		if(u == null || !(u.contains("https://")||u.contains("http://"))){
+			return null;
+		}else if(!urllinks.containsKey(u)){
+			UrlLink newlink = new UrlLink(u);
+			urllinks.put(u, newlink);
+			return newlink;
 		}else{
-			return (urllinks.put(u, new UrlLink(u)) != null);
+			return null;
 		}
 	}
 	
@@ -94,6 +100,44 @@ public class UrlLink {
 		this.pageRank = pageRank;
 		this.refPageRank = 10;
 		this.lamdaOverN = lamda/urllinks.size();
+	}
+	
+	private String getPath(String url2) {
+		//remove https:// or http://
+		url2 = url2.substring(url2.indexOf("//")+2);
+		//System.out.println("url2: "+url2);
+		int lastSlash = url2.lastIndexOf('/');
+		//System.out.println(lastSlash);
+		if(lastSlash != -1){
+			//System.out.println("url2 substr 1:"+url2.substring(0, lastSlash + 1));
+			return url2.substring(0, lastSlash + 1);
+		}else{
+			//System.out.println("url2 substr 2:"+url2 + "/");
+			return url2 + "/";
+		}
+	}
+	
+	public String getPath(){
+		return this.path;
+	}
+
+	public static String urlTrim(String u){
+		if(u.contains("?")){
+			u = u.substring(0, u.indexOf("?"));
+		}
+		//remove after ;
+		if(u.contains(";")){
+			u = u.substring(0, u.indexOf(";"));
+		}
+		//
+		if(u.contains("#")){
+			u = u.substring(0, u.indexOf("#"));
+		}
+		//if last one is /, then remove it
+		if(u.charAt(u.length() - 1) == '/'){
+			u = u.substring(0, u.length() - 1);
+		}
+		return u;
 	}
 
 }
