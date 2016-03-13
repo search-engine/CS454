@@ -11,7 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import Index.Indexing;
 import url.UrlLink;
 
 
@@ -62,7 +61,7 @@ public class Crawler {
 			while(!urlQueue.isEmpty()){
 				urlQueue2.add(urlQueue.poll());
 			}
-	        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+	        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
 	        HashMap<UrlLink, Future<Set<String>>> resultList = new HashMap<UrlLink, Future<Set<String>>>();
 	        
 	        while(!urlQueue2.isEmpty()){
@@ -81,8 +80,11 @@ public class Crawler {
 						if(newlink != null){
 							urlToLink.addLinkTo(newlink);
 							urlQueue.add(newlink);
-						}else if(UrlLink.getAllLinks().containsKey(u)){
-							urlToLink.addLinkTo(UrlLink.getAllLinks().get(u));
+						}else {
+							newlink = UrlLink.getAllLinks().get(u);
+							if(newlink != null && (!newlink.equals(urlToLink))){
+								urlToLink.addLinkTo(UrlLink.getAllLinks().get(u));
+							}
 						}
 					}
 				} catch (InterruptedException e) {
