@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import Index.Indexing;
 import url.UrlLink;
 
 
@@ -101,7 +102,7 @@ public class Crawler {
 			System.out.println(entry.getValue().getUrl()+" in "+entry.getValue().linkFromSize()+ " out "+entry.getValue().linkToSize());			
 		}
 		System.out.println("starting indexing and ranking now");
-		//Indexing.indexingAndRanking();
+		Indexing.indexingAndRanking();
 	 }
 	
 }
