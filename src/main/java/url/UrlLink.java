@@ -180,7 +180,7 @@ public class UrlLink {
 		for(UrlLink formLink: linkTo){
 			formLink.removeFrom(this);
 		}
-		urllinks.remove(this);
+		urllinks.remove(this.getUrl());
 	}
 	
 }
