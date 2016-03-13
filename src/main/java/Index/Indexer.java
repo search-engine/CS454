@@ -7,9 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import url.UrlLink;
 
 public class Indexer {
@@ -106,50 +103,6 @@ public class Indexer {
 		for(String stopword : stopwords) {
 			stopwordset.add(stopword);
 		}
-		
-//		try {
-//		AutoDetectParser parser = new AutoDetectParser();
-//		InputStream stream = TikaInputStream.get(new File(url));
-//        ContentHandler handler = new BodyContentHandler();
-//        Metadata metadata = new Metadata();
-//       
-//        LinkContentHandler linkhandler=new LinkContentHandler();
-//        InputStream stream1 = TikaInputStream.get(new File(url));
-//        parser.parse(stream1, linkhandler, metadata, new ParseContext());
-//        List<Link> links=linkhandler.getLinks();
-//        Set<String> uris = new HashSet<String>();
-//        for(Link link: links){
-//        	if(link.isAnchor()){
-//        		String uri = link.getUri();
-//            	uris.add(uri);
-//        	}
-//        }
-//        parser.parse(stream, handler, metadata, new ParseContext());
-//        String plainText = handler.toString();
-//        String trimText = plainText.replaceAll("\\P{L}", " ");
-//        stream.close();
-//
-//		for(String uri : uris){
-//			getRealPath(url, uri);
-//			System.out.println(uri);
-//		}
-        
-        
-//        String[] info = trimText.split("\\s+");
-        
-//        for(String s : info) {
-//        	if(!stopwordset.contains(s.toLowerCase()) && !s.isEmpty() && s.length() > 1){
-//        		IndexWords word = null;
-//        		if(index.containsKey(s.toLowerCase())) {
-//        			word = index.get(s.toLowerCase());
-//        		}else{
-//        			word = new IndexWords();
-//        			index.put(s.toLowerCase(), word);
-//        		}
-//	        	word.setDocument(url);
-//	        }
-//        }
-//		}catch(Exception e) {}
 		
 		try {
 			Document document = Jsoup.parse(new File(urlLink.getLongPath()),"UTF-8");

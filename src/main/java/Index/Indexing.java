@@ -1,19 +1,11 @@
 package Index;
 
-import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -27,8 +19,7 @@ public class Indexing {
 	private static final double pageRankRatio = 0.15;
 	
 	public static void indexingAndRanking() {
-		File f = null;
-	      try{     
+		  try{     
 	    	  
 	    	  // To connect to mongodb server
 		         MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
@@ -87,6 +78,13 @@ public class Indexing {
 		              refined = entry.getValue().confirmRank(0.01) && refined;
 		          }
 	          }
+	          
+	          
+	          for (Entry<String, UrlLink> entry : UrlLink.getAllLinks().entrySet()) {
+	              System.out.println(entry.getKey() + " : " + entry.getValue().getPageRank());
+	          }
+	          
+	          
 	          
 	          for(Entry<String, IndexWords> entry : Indexer.getALlTerms().entrySet()){
 	        	  BasicDBObject documentDetail = new BasicDBObject();
