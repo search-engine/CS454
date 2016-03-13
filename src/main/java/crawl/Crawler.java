@@ -3,6 +3,7 @@ package crawl;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -66,7 +67,7 @@ public class Crawler {
 	        
 	        while(!urlQueue2.isEmpty()){
 	        	UrlLink urlLink2Crawl = urlQueue2.poll();
-	        	Crawl crawler = new Crawl(urlLink2Crawl, depth);
+	        	Crawl crawler = new Crawl(urlLink2Crawl);
 	        	Future<Set<String>> resultSet = executor.submit(crawler);
 	        	resultList.put(urlLink2Crawl, resultSet);
 	        }
@@ -75,10 +76,14 @@ public class Crawler {
 				try {
 					Set<String> sets = futureSet.get();
 					for(String u : sets){
-						UrlLink newlink = UrlLink.addLink(u);
+						UrlLink newlink = null;
+						if(depth > 0){
+							newlink = UrlLink.addLink(u);
+						}
 						if(newlink != null){
-							urlQueue.add(newlink);
 							urlToLink.addLinkTo(newlink);
+						}else if(UrlLink.getAllLinks().containsKey(u)){
+							urlToLink.addLinkTo(UrlLink.getAllLinks().get(u));
 						}
 					}
 				} catch (InterruptedException e) {
@@ -91,10 +96,9 @@ public class Crawler {
 			while(!executor.isTerminated()){}
 			depth--;
 		}
-//		for(Entry<String, UrlLink> entry: UrlLink.getAllLinks().entrySet()){
-//			System.out.println(entry.getValue().getUrl()+" in "+entry.getValue().linkFromSize()+ " out "+entry.getValue().linkToSize());
-//			
-//		}
+		for(Entry<String, UrlLink> entry: UrlLink.getAllLinks().entrySet()){
+			System.out.println(entry.getValue().getUrl()+" in "+entry.getValue().linkFromSize()+ " out "+entry.getValue().linkToSize());			
+		}
 		System.out.println("starting indexing and ranking now");
 		Indexing.indexingAndRanking();
 	 }
